@@ -1,0 +1,2258 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Coroa de Portugal: Caderneta Real</title>
+    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* Cores Gerais */
+            --bg-dark: #1a1a2e;
+            --text-light: #e0e0e0;
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --gold: #ffd700;
+            --success: #2ecc71;
+            
+            /* Cores Dinastias */
+            --borgonha: #8b0000;
+            --avis: #2e8b57;
+            --filipina: #daa520;
+            --braganca: #4169e1;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Lato', sans-serif;
+            background-color: var(--bg-dark);
+            background-image: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), url('https://upload.wikimedia.org/wikipedia/commons/5/56/Castelo_de_Guimaraes_01.jpg');
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+            color: var(--text-light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- UI COMPONENTS --- */
+        h1, h2, h3, h4 { font-family: 'Cinzel', serif; letter-spacing: 1px; color: var(--gold); }
+        p { line-height: 1.6; }
+
+        .btn {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            font-family: 'Lato', sans-serif;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary { 
+            background: linear-gradient(135deg, var(--gold) 0%, #ffa500 100%); 
+            color: #000; 
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255, 215, 0, 0.5); }
+        .btn-primary:active { transform: translateY(0); }
+
+        .btn-outline { background: transparent; border: 2px solid var(--gold); color: var(--gold); }
+        .btn-outline:hover { background: var(--gold); color: #000; }
+        
+        .btn-infographic {
+            margin-left: auto; 
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+            padding: 8px 20px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            display: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            z-index: 10;
+        }
+        .btn-infographic:hover { background: var(--gold); color: #000; }
+
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            transition: transform 0.3s ease;
+        }
+
+        /* --- HEADER --- */
+        header {
+            padding: 15px 30px;
+            background: rgba(0,0,0,0.8);
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .logo-area { display: flex; align-items: center; gap: 15px; }
+        .logo-area h1 { font-size: 1.4rem; margin: 0; color: #fff; }
+        .logo-area small { color: var(--gold); font-family: 'Cinzel', serif; }
+
+        .nav-menu { display: flex; gap: 10px; align-items: center; }
+        /* Estilos gerais para botões do menu */
+        .nav-menu button {
+            background: transparent;
+            color: rgba(255,255,255,0.7);
+            border: none;
+            padding: 8px 12px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s;
+            font-family: 'Cinzel', serif;
+        }
+        
+        .nav-menu button:hover, .nav-menu button.active { color: var(--gold); }
+        .nav-menu > button::after, .dropdown > button::after {
+            content: ''; position: absolute; bottom: 0; left: 50%; width: 0; height: 2px;
+            background: var(--gold); transition: all 0.3s; transform: translateX(-50%);
+        }
+        .nav-menu > button.active::after, .dropdown > button.active::after { width: 80%; }
+
+        /* Styles para o Dropdown */
+        .dropdown { position: relative; display: inline-block; }
+        .dropdown-content {
+            display: none; position: absolute; background-color: rgba(26, 26, 46, 0.95);
+            min-width: 220px; box-shadow: 0 8px 16px 0 rgba(0,0,0,0.5); z-index: 1000;
+            border: 1px solid var(--glass-border); border-radius: 8px; backdrop-filter: blur(10px);
+            top: 100%; left: 50%; transform: translateX(-50%);
+        }
+        .dropdown-content button {
+            text-align: left; width: 100%; border-radius: 0; padding: 12px 16px;
+        }
+        .dropdown-content button::after { display: none; } /* Remove o sublinhado dos itens do dropdown */
+        .dropdown-content button:hover { background-color: rgba(255, 215, 0, 0.1); color: var(--gold); }
+        .dropdown-content button:first-child { border-radius: 8px 8px 0 0; }
+        .dropdown-content button:last-child { border-radius: 0 0 8px 8px; }
+        
+        .dropdown:hover .dropdown-content { display: block; }
+
+        /* --- VIEWS --- */
+        .view-section { display: none; padding: 40px 20px; max-width: 1200px; margin: 0 auto; animation: fadeIn 0.6s ease-out; padding-bottom: 120px; /* Space for inventory */ }
+        .view-section.active { display: block; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- DASHBOARD --- */
+        .dynasty-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .dynasty-card {
+            height: 350px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+            border-width: 2px;
+            border-style: solid;
+        }
+
+        .dynasty-card:hover { transform: translateY(-10px); box-shadow: 0 15px 40px rgba(0,0,0,0.6); }
+        
+        .dynasty-bg {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            opacity: 0.4; transition: all 0.5s; object-fit: cover; filter: grayscale(40%);
+        }
+        .dynasty-card:hover .dynasty-bg { opacity: 0.7; transform: scale(1.1); filter: grayscale(0%); }
+        
+        .dynasty-content { z-index: 2; position: relative; padding: 20px; background: rgba(0,0,0,0.4); border-radius: 10px; width: 90%; }
+
+        /* --- PAÇO REAL (Kings Grid) --- */
+        .hall-header { text-align: center; margin-bottom: 40px; border-left: 5px solid; }
+        .kings-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 25px; }
+
+        .king-card {
+            text-align: center; cursor: pointer; transition: all 0.3s ease; position: relative;
+            display: flex; flex-direction: column; align-items: center;
+        }
+        .king-card:hover { background: rgba(255,255,255,0.15); transform: translateY(-5px); }
+        
+        .king-avatar {
+            width: 130px; height: 130px; border-radius: 50%; object-fit: cover;
+            border: 4px solid var(--gold); margin-bottom: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+        .king-name { font-weight: bold; font-size: 1.1rem; color: #fff; margin-bottom: 5px; }
+        .king-dates { font-size: 0.85rem; opacity: 0.7; font-family: monospace; }
+
+        /* --- STICKER ALBUM (CADERNETA) STYLES --- */
+        .album-header {
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;
+            background: rgba(0,0,0,0.5); padding: 15px 25px; border-radius: 12px; border: 1px solid var(--glass-border);
+        }
+        .album-stats { font-family: 'Cinzel', serif; color: var(--gold); font-size: 1.1rem; }
+        
+        .sticker-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .sticker-slot {
+            background: rgba(255,255,255,0.05); border: 2px dashed rgba(255,255,255,0.2);
+            border-radius: 10px; aspect-ratio: 3/4; position: relative;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: all 0.3s ease; overflow: hidden;
+        }
+        
+        .sticker-slot.drag-hover { background: rgba(255, 215, 0, 0.2); border-color: var(--gold); transform: scale(1.05); }
+        
+        .sticker-slot.filled {
+            border-style: solid; border-color: var(--gold); background: var(--bg-dark);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+        
+        .sticker-placeholder-content {
+            text-align: center; opacity: 0.5; pointer-events: none;
+        }
+        .sticker-number { font-size: 2rem; font-weight: bold; color: rgba(255,255,255,0.1); position: absolute; top: 10px; left: 15px; }
+
+        /* Sticker Card Design */
+        .sticker-card {
+            width: 100%; height: 100%; position: absolute; top: 0; left: 0;
+            display: flex; flex-direction: column;
+            background-size: cover; background-position: center;
+            border-radius: 8px; overflow: hidden;
+            animation: stickerPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .sticker-card::after {
+            content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 50%;
+            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+        }
+        
+        .sticker-info {
+            position: absolute; bottom: 0; left: 0; width: 100%; padding: 10px; z-index: 2; text-align: center;
+        }
+        .sticker-info h4 { font-size: 0.9rem; margin: 0; color: #fff; text-shadow: 1px 1px 2px #000; }
+        .sticker-info span { font-size: 0.7rem; color: var(--gold); }
+
+        @keyframes stickerPop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        /* Inventory Bar (Sticky Bottom) */
+        .inventory-bar {
+            position: fixed; bottom: 0; left: 0; width: 100%; height: 130px;
+            background: rgba(26, 26, 46, 0.95); border-top: 2px solid var(--gold);
+            z-index: 900; display: flex; align-items: center; padding: 0 20px; gap: 20px;
+            backdrop-filter: blur(10px); box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
+            transition: transform 0.3s ease;
+        }
+        
+        .inventory-bar.hidden { transform: translateY(100%); }
+
+        .pack-area {
+            flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 5px;
+            padding-right: 20px; border-right: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .inventory-slots {
+            flex-grow: 1; display: flex; gap: 15px; overflow-x: auto; padding: 10px 5px;
+            scroll-behavior: smooth;
+        }
+        .inventory-slots::-webkit-scrollbar { height: 6px; }
+        .inventory-slots::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 3px; }
+
+        .inventory-item {
+            width: 80px; height: 100px; background: #333; border-radius: 6px; flex-shrink: 0;
+            border: 2px solid #555; cursor: grab; position: relative; overflow: hidden;
+            transition: transform 0.2s;
+        }
+        .inventory-item:hover { transform: translateY(-5px); border-color: var(--gold); }
+        .inventory-item:active { cursor: grabbing; }
+        .inventory-item img { width: 100%; height: 100%; object-fit: cover; }
+        .inventory-item.selected { border-color: var(--success); box-shadow: 0 0 10px var(--success); }
+
+        /* Pack Opening Animation */
+        .pack-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 2000;
+            display: none; justify-content: center; align-items: center; flex-direction: column;
+        }
+        .pack-cards-container { display: flex; gap: 20px; perspective: 1000px; margin-top: 30px; flex-wrap: wrap; justify-content: center; }
+        .new-card-reveal {
+            width: 160px; height: 220px; background: #fff; border-radius: 10px;
+            transform: rotateY(90deg); transition: transform 0.6s; border: 3px solid var(--gold);
+            overflow: hidden; position: relative;
+        }
+        .new-card-reveal.revealed { transform: rotateY(0deg); }
+        .new-card-reveal img { width: 100%; height: 100%; object-fit: cover; }
+        
+        /* --- MODAL PRINCIPAL (FICHA) --- */
+        .modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 1000;
+            justify-content: center; align-items: center;
+            backdrop-filter: blur(8px);
+            opacity: 0; transition: opacity 0.3s;
+        }
+        .modal.show { opacity: 1; }
+
+        .modal-content {
+            width: 90%; max-width: 900px; height: 85vh;
+            background: #252525; border: 1px solid var(--gold); border-radius: 12px;
+            position: relative; overflow: hidden; display: flex; flex-direction: column;
+            box-shadow: 0 0 50px rgba(255, 215, 0, 0.2);
+            transform: scale(0.9); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .modal.show .modal-content { transform: scale(1); }
+
+        .modal-header-img {
+            height: 200px; background-size: cover; background-position: center;
+            position: relative; display: flex; align-items: flex-end; padding: 30px;
+            gap: 25px;
+            flex-shrink: 0;
+            transition: background-image 0.5s ease;
+        }
+        .modal-header-img::after {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(to top, #252525, rgba(37, 37, 37, 0.6));
+        }
+        .modal-title-area { position: relative; z-index: 2; flex: 1; min-width: 0; }
+        .modal-title-area h2 { 
+            font-size: clamp(1.8rem, 4vw, 2.5rem); margin: 0; 
+            text-shadow: 2px 2px 4px #000; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .modal-avatar {
+            position: relative; z-index: 2; width: 130px; height: 130px;
+            border-radius: 50%; border: 4px solid var(--gold); object-fit: cover;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.7); flex-shrink: 0;
+        }
+        .close-modal {
+            position: absolute; top: 20px; right: 25px;
+            font-size: 30px; color: #fff; cursor: pointer; z-index: 10;
+            text-shadow: 0 0 10px #000; transition: color 0.3s;
+        }
+        .close-modal:hover { color: var(--gold); }
+        .modal-nav-arrow {
+            position: absolute; top: 50%; transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.5); color: rgba(255, 255, 255, 0.5);
+            border: 1px solid transparent; width: 50px; height: 50px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; cursor: pointer;
+            z-index: 20; transition: all 0.3s; font-size: 1.2rem;
+        }
+        .modal-nav-arrow:hover {
+            background: rgba(255, 215, 0, 0.2); color: var(--gold); border-color: var(--gold);
+            box-shadow: 0 0 15px rgba(0,0,0,0.5);
+        }
+        .nav-prev { left: 20px; }
+        .nav-next { right: 20px; }
+        .modal-body { padding: 30px; overflow-y: auto; flex: 1; }
+        .tabs { display: flex; gap: 20px; border-bottom: 1px solid #444; margin-bottom: 25px; }
+        .tab-btn {
+            background: none; border: none; color: #aaa; padding: 10px 0;
+            cursor: pointer; font-size: 1.1rem; font-family: 'Cinzel', serif;
+            transition: all 0.3s; border-bottom: 2px solid transparent;
+        }
+        .tab-btn:hover { color: #fff; }
+        .tab-btn.active { color: var(--gold); border-bottom-color: var(--gold); }
+        .tab-content-panel { display: none; animation: fadeIn 0.3s; }
+        .tab-content-panel.active { display: block; }
+        .tab-content-panel ul { list-style: none; }
+        .tab-content-panel li { margin-bottom: 12px; padding-left: 20px; position: relative; }
+        .tab-content-panel li::before { content: '⬥'; color: var(--gold); position: absolute; left: 0; }
+        
+        .bio-field { margin-bottom: 12px; font-size: 0.95rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px; }
+        .bio-field strong { color: var(--gold); display: inline-block; width: 120px; }
+
+        /* --- MODAL INFOGRAFIA --- */
+        #modal-infographic-container { z-index: 2000; background: rgba(0,0,0,0.95); }
+        .infographic-content {
+            width: auto; height: auto; max-width: 95vw; max-height: 95vh;
+            display: flex; justify-content: center; align-items: center; position: relative;
+        }
+        .infographic-content img {
+            max-width: 100%; max-height: 90vh; border: 2px solid var(--gold);
+            box-shadow: 0 0 40px rgba(0,0,0,0.8); border-radius: 4px;
+        }
+
+        /* --- FLASHCARDS STYLES --- */
+        .flashcard-container {
+            perspective: 1000px;
+            width: 100%;
+            max-width: 600px;
+            height: 350px;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        .flashcard {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transition: transform 0.8s;
+            transform-style: preserve-3d;
+            cursor: pointer;
+        }
+        
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+        
+        .flashcard-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 15px;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            border: 2px solid var(--gold);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        
+        .flashcard-front {
+            background: linear-gradient(135deg, #2c3e50, #1a1a2e);
+            color: #fff;
+        }
+        
+        .flashcard-back {
+            background: linear-gradient(135deg, var(--gold), #ffa500);
+            color: #000;
+            transform: rotateY(180deg);
+        }
+        
+        .flashcard-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            opacity: 0.7;
+            text-transform: uppercase;
+        }
+        
+        .flashcard-content {
+            font-size: 1.3rem;
+            line-height: 1.6;
+            font-weight: bold;
+        }
+
+        .flashcard-controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        /* --- GUIA MULTIMÉDIA & ACORDEÃO --- */
+        .multimedia-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; }
+        .media-container { background: rgba(0, 0, 0, 0.3); border-radius: 8px; padding: 10px; border: 1px solid rgba(255, 255, 255, 0.1); }
+        .media-container h3 { font-size: 1.1rem; margin-bottom: 10px; color: var(--gold); border-bottom: 1px solid rgba(255,215,0,0.3); padding-bottom: 5px; }
+        video, audio { width: 100%; outline: none; border-radius: 4px; }
+        .guide-text-area { max-height: 500px; overflow-y: auto; padding-right: 15px; margin-bottom: 30px; }
+        .guide-text-area::-webkit-scrollbar { width: 8px; }
+        .guide-text-area::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 4px; }
+        .guide-chapter { margin-bottom: 30px; }
+        .guide-chapter h3 { color: var(--gold); font-size: 1.4rem; margin-bottom: 15px; border-left: 3px solid var(--gold); padding-left: 10px; }
+        .guide-chapter h4 { color: #fff; font-size: 1.1rem; margin: 15px 0 10px 0; }
+        .accordion {
+            background-color: rgba(255,255,255,0.08); color: var(--text-light); cursor: pointer; padding: 18px;
+            width: 100%; border: none; text-align: left; outline: none; font-size: 1.1rem;
+            transition: 0.4s; border-bottom: 1px solid rgba(255,255,255,0.1); font-family: 'Cinzel', serif;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .accordion:hover, .accordion.active { background-color: rgba(255, 215, 0, 0.15); color: var(--gold); }
+        .accordion:after { content: '\002B'; color: var(--gold); font-weight: bold; float: right; margin-left: 5px; font-family: 'Lato', sans-serif; }
+        .accordion.active:after { content: "\2212"; }
+        .panel { padding: 0 18px; background-color: rgba(0, 0, 0, 0.3); max-height: 0; overflow: hidden; transition: max-height 0.2s ease-out; border-left: 3px solid var(--gold); }
+        .panel p { margin: 15px 0; font-size: 0.95rem; text-align: justify; }
+
+        /* --- TIMELINE & GAMES --- */
+        .timeline-track { display: flex; gap: 40px; padding: 20px; overflow-x: auto; scroll-behavior: smooth; }
+        .timeline-track::-webkit-scrollbar { height: 8px; }
+        .timeline-track::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 4px; }
+        
+        .order-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin: 30px 0; }
+        .order-card {
+            background: var(--glass-bg); border: 2px solid rgba(255,255,255,0.1); border-radius: 12px;
+            width: 160px; padding: 15px; cursor: pointer; transition: all 0.3s; position: relative; text-align: center;
+        }
+        .order-card.selected { border-color: var(--gold); box-shadow: 0 0 20px rgba(255, 215, 0, 0.4); transform: scale(1.05); }
+        
+        .match-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin: 30px 0; }
+        .match-card {
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); padding: 15px;
+            border-radius: 8px; cursor: pointer; transition: all 0.2s; text-align: center;
+            display: flex; align-items: center; justify-content: center; min-height: 60px;
+        }
+        .match-card:hover { background: rgba(255,255,255,0.15); }
+        .match-card.selected { border-color: var(--gold); background: rgba(255, 215, 0, 0.1); }
+        .match-card.matched { border-color: #2ecc71; background: rgba(46, 204, 113, 0.2); opacity: 0.6; pointer-events: none; }
+        .match-card.error { animation: shake 0.5s; border-color: #e74c3c; }
+
+        .room-status-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: rgba(0,0,0,0.4); padding: 15px; border-radius: 10px; border-left: 5px solid; }
+        .progress-container { flex-grow: 1; margin: 0 20px; background: rgba(255,255,255,0.1); height: 10px; border-radius: 5px; overflow: hidden; }
+        .progress-bar { height: 100%; background: linear-gradient(90deg, var(--gold), #ffa500); width: 0%; transition: width 0.5s ease; }
+        .room-door { margin-top: 30px; padding: 20px; border: 2px dashed rgba(255,255,255,0.2); border-radius: 12px; text-align: center; transition: all 0.3s; }
+        .room-door.unlocked { border-color: #2ecc71; background: rgba(46, 204, 113, 0.1); border-style: solid; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(46, 204, 113, 0); } 100% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0); } }
+
+        /* --- STYLES PARA O QUIZ REAL --- */
+        .quiz-container { max-width: 800px; margin: 0 auto; }
+        .quiz-option {
+            width: 100%; padding: 15px; margin-bottom: 12px;
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2);
+            color: #fff; text-align: left; border-radius: 8px; cursor: pointer; transition: all 0.2s;
+            font-size: 1rem; display: flex; align-items: center;
+        }
+        .quiz-option:hover { background: rgba(255,255,255,0.15); border-color: var(--gold); }
+        .quiz-option.selected { border-color: var(--gold); background: rgba(255, 215, 0, 0.15); }
+        .quiz-option.correct { background: rgba(46, 204, 113, 0.3); border-color: #2ecc71; }
+        .quiz-option.wrong { background: rgba(231, 76, 60, 0.3); border-color: #e74c3c; }
+        
+        .quiz-status-bar { display: flex; justify-content: space-between; margin-bottom: 20px; font-family: 'Cinzel', serif; color: var(--gold); border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; }
+        
+        /* Certificado */
+        .certificate-frame {
+            border: 4px double var(--gold); padding: 30px; margin: 20px 0;
+            background: linear-gradient(rgba(26, 26, 46, 0.9), rgba(26, 26, 46, 0.9)), url('https://www.transparenttextures.com/patterns/aged-paper.png');
+            text-align: center; position: relative;
+        }
+        .certificate-frame::before { content: '\f5a2'; font-family: "Font Awesome 6 Free"; font-weight: 900; position: absolute; top: -20px; left: 50%; transform: translateX(-50%); font-size: 40px; color: var(--gold); background: var(--bg-dark); padding: 0 15px; }
+        .cert-name { font-family: 'Cinzel', serif; font-size: 2rem; color: var(--gold); margin: 20px 0; border-bottom: 1px solid rgba(255,215,0,0.5); display: inline-block; padding: 0 20px; }
+        .cert-score { font-size: 1.5rem; font-weight: bold; margin-bottom: 10px; }
+
+        /* Review Mode */
+        .review-item {
+            background: rgba(0,0,0,0.3); border-radius: 8px; padding: 15px; margin-bottom: 20px;
+            border-left: 4px solid transparent;
+        }
+        .review-item.correct { border-left-color: #2ecc71; }
+        .review-item.wrong { border-left-color: #e74c3c; }
+        .review-q { font-weight: bold; margin-bottom: 10px; font-size: 1.1rem; }
+        .review-ans { font-size: 0.95rem; margin-bottom: 5px; }
+        .review-explanation { 
+            background: rgba(255, 215, 0, 0.1); padding: 10px; border-radius: 4px;
+            margin-top: 10px; font-style: italic; font-size: 0.9rem; color: #ddd;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header { flex-direction: column; gap: 15px; }
+            .nav-menu { width: 100%; justify-content: center; flex-wrap: wrap; }
+            .dropdown { width: 100%; text-align: center; margin-top: 5px; }
+            .dropbtn { width: 100%; justify-content: center; }
+            .dropdown-content { position: relative; width: 100%; box-shadow: none; border: none; background: rgba(0,0,0,0.2); }
+            .dropdown:hover .dropdown-content { display: block; }
+            
+            .match-grid { grid-template-columns: 1fr; }
+            .multimedia-grid { grid-template-columns: 1fr; }
+            .modal-content { height: 95vh; width: 95%; }
+            .modal-header-img { flex-direction: column; align-items: center; text-align: center; height: auto; gap: 10px; }
+            .modal-title-area h2 { font-size: 1.8rem; white-space: normal; }
+            .nav-prev, .nav-next { width: 35px; height: 35px; }
+            .btn-infographic { margin-left: 0; margin-top: 15px; }
+            .inventory-bar { height: 110px; padding: 0 10px; }
+            .inventory-item { width: 60px; height: 80px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-area">
+            <i class="fas fa-crown fa-2x" style="color: var(--gold);"></i>
+            <div>
+                <h1>A COROA DE PORTUGAL</h1>
+                <small>1139 - 1910</small>
+            </div>
+        </div>
+        <nav class="nav-menu">
+            <button onclick="router('home')" class="active" id="nav-home"><i class="fas fa-landmark"></i> Paço Real</button>
+            <button onclick="router('album')" id="nav-album"><i class="fas fa-book"></i> Caderneta Real</button>
+            <button onclick="router('guide')" id="nav-guide"><i class="fas fa-book-open"></i> Guia</button>
+            
+            <div class="dropdown">
+                <button class="dropbtn" id="nav-activities"><i class="fas fa-dice"></i> Atividades Lúdicas <i class="fas fa-caret-down" style="margin-left: 5px;"></i></button>
+                <div class="dropdown-content">
+                    <button onclick="router('flashcards')" id="nav-flashcards"><i class="fas fa-clone"></i> Flashcards</button>
+                    <button onclick="router('quiz')" id="nav-quiz"><i class="fas fa-scroll"></i> Quiz Real</button>
+                    <button onclick="router('timeline')" id="nav-timeline"><i class="fas fa-history"></i> Cronologia</button>
+                    <button onclick="router('game')" id="nav-game"><i class="fas fa-key"></i> Escape Room</button>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <section id="view-home" class="view-section active">
+        <div style="text-align: center; margin-bottom: 40px;">
+            <h2>Bem-vindo ao Museu Real Virtual</h2>
+            <p>Explore as quatro Dinastias que moldaram Portugal. Clique num período para entrar no Paço Real.</p>
+        </div>
+        <div class="dynasty-selector" id="dynasty-container">
+            </div>
+    </section>
+
+    <!-- PAÇO REAL (View Hall) -->
+    <section id="view-hall" class="view-section">
+        <button onclick="router('home')" class="btn btn-outline" style="margin-bottom: 30px;">
+            <i class="fas fa-arrow-left"></i> Voltar
+        </button>
+        <div id="hall-content" class="glass-panel hall-header"></div>
+        <div id="hall-kings" class="kings-grid"></div>
+    </section>
+
+    <!-- NOVA SECÇÃO: CADERNETA REAL (View Album) -->
+    <section id="view-album" class="view-section">
+        <div style="text-align: center; margin-bottom: 30px;">
+            <h2>Caderneta de Cromos Real</h2>
+            <p>Complete a coleção real! Abra pacotes e arraste os cromos para o lugar correto.</p>
+        </div>
+
+        <div id="album-dynasty-selector" class="dynasty-selector" style="margin-bottom: 40px;"></div>
+
+        <div id="album-area" style="display: none;">
+            <button onclick="showAlbumSelector()" class="btn btn-outline" style="margin-bottom: 20px;">
+                <i class="fas fa-arrow-left"></i> Escolher outra Dinastia
+            </button>
+            
+            <div class="album-header">
+                <h3 id="album-title" style="margin: 0;">Dinastia</h3>
+                <div class="album-stats">
+                    <i class="fas fa-images"></i> <span id="album-progress-text">0/0</span>
+                </div>
+            </div>
+
+            <div id="sticker-grid" class="sticker-grid"></div>
+            
+            <!-- Inventory Bar -->
+            <div id="inventory-bar" class="inventory-bar hidden">
+                <div class="pack-area">
+                    <button class="btn btn-primary" onclick="openPack()" style="padding: 5px 15px; font-size: 0.9rem;">
+                        <i class="fas fa-box-open"></i> Abrir Pacote
+                    </button>
+                    <small style="color: #aaa; font-size: 0.7rem;">3 Cromos Grátis</small>
+                </div>
+                <div style="width: 1px; height: 60%; background: rgba(255,255,255,0.1); margin: 0 10px;"></div>
+                <div class="inventory-slots" id="inventory-slots">
+                    <!-- Stickers collected but not pasted will appear here -->
+                    <div style="color: #666; font-size: 0.9rem; align-self: center;">Sem cromos novos...</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FLASHCARDS SECTION -->
+    <section id="view-flashcards" class="view-section">
+        <div style="text-align: center; margin-bottom: 30px;">
+            <h2>Flashcards Reais</h2>
+            <p>Escolha uma dinastia e teste a sua memória antes de jogar.</p>
+        </div>
+
+        <div id="flashcards-dynasty-selector" class="dynasty-selector" style="margin-bottom: 40px;">
+            <!-- Will be populated by JS -->
+        </div>
+
+        <div id="flashcards-area" style="display: none;">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <h3 id="fc-dynasty-title" style="color: var(--gold);">Título da Dinastia</h3>
+                <span id="fc-counter">1 / 10</span>
+            </div>
+
+            <div class="flashcard-container">
+                <div class="flashcard" onclick="flipCard(this)">
+                    <div class="flashcard-face flashcard-front">
+                        <div class="flashcard-title"><i class="fas fa-question-circle"></i> Pergunta</div>
+                        <div id="fc-front-text" class="flashcard-content">...</div>
+                        <div style="margin-top:auto; font-size:0.8rem; opacity:0.6;">(Clique para ver a resposta)</div>
+                    </div>
+                    <div class="flashcard-face flashcard-back">
+                        <div class="flashcard-title"><i class="fas fa-lightbulb"></i> Resposta</div>
+                        <div id="fc-back-text" class="flashcard-content">...</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flashcard-controls">
+                <button class="btn btn-outline" onclick="navCard(-1)"><i class="fas fa-chevron-left"></i> Anterior</button>
+                <button class="btn btn-outline" onclick="navCard(1)">Seguinte <i class="fas fa-chevron-right"></i></button>
+            </div>
+
+            <div style="text-align: center; margin-top: 40px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 30px;">
+                <p style="margin-bottom: 15px;">Sente-se preparado?</p>
+                <button class="btn btn-primary" onclick="goToDynastyGames()">
+                    <i class="fas fa-gamepad"></i> Praticar Jogos desta Dinastia
+                </button>
+            </div>
+            
+            <div style="text-align: center; margin-top: 15px;">
+                 <button class="btn btn-outline" onclick="showFlashcardSelector()">Voltar à Seleção</button>
+            </div>
+        </div>
+    </section>
+
+    <section id="view-guide" class="view-section">
+        <div style="text-align: center; margin-bottom: 30px;">
+            <h2>Guia Histórico Multimédia</h2>
+            <p>Uma viagem aprofundada pelos monarcas que moldaram a nação.</p>
+        </div>
+
+        <div class="multimedia-grid">
+            <div class="media-container">
+                <h3><i class="fas fa-video"></i> Documentário</h3>
+                <video controls>
+                    <source src="./video.mp4" type="video/mp4">
+                    O seu browser não suporta vídeo.
+                </video>
+            </div>
+            <div class="media-container">
+                <h3><i class="fas fa-headphones"></i> Podcast Real</h3>
+                <div style="display:flex; align-items:center; height:100%; justify-content:center; flex-direction: column;">
+                    <i class="fas fa-podcast fa-3x" style="color:var(--gold); margin-bottom:15px;"></i>
+                    <audio controls>
+                        <source src="./podcast.mp3" type="audio/mpeg">
+                        O seu browser não suporta áudio.
+                    </audio>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass-panel" style="margin-bottom: 30px; text-align:center;">
+            <h3 style="color:var(--gold); margin-bottom:15px;">Infografia Cronológica</h3>
+            <div style="cursor: pointer; position: relative; display: inline-block;" onclick="openZoomImage('./infografia.jpg')" title="Clique para ampliar">
+                <img src="./infografia.jpg" style="max-width:100%; border-radius:8px; border:1px solid #444;" alt="Infografia da Monarquia">
+                <p style="margin-top: 10px; color: var(--gold); font-size: 0.9rem;"><i class="fas fa-search-plus"></i> Clique na imagem para ampliar</p>
+            </div>
+        </div>
+
+        <h3 style="color: var(--gold); border-bottom: 2px solid var(--gold); margin-bottom: 20px; padding-bottom: 10px;">Perfis Biográficos</h3>
+        <div class="glass-panel guide-text-area">
+             <div class="guide-chapter">
+                <h3>1. Introdução: As Dinastias de Portugal</h3>
+                <p>A história de Portugal não é apenas uma sucessão de datas e nomes; é uma saga forjada pela ambição, pela fé e pela visão de monarcas que, em cada dinastia, enfrentaram desafios únicos.</p>
+            </div>
+            <div class="guide-chapter">
+                <h3>2. A Primeira Dinastia: Borgonha ou Afonsina</h3>
+                <p><em>A Fundação de um Reino</em></p>
+                <h4>D. Afonso Henriques (c. 1109-1185): O Conquistador</h4>
+                <p>Insatisfeito com a subordinação do Condado Portucalense, Afonso Henriques desafiou a autoridade materna e forjou a sua ascensão a ferro e fogo. Após a vitória na Batalha de Ourique (1139), autoproclamou-se Rei.</p>
+                <h4>D. Dinis I (1261-1325): O Lavrador e o Poeta</h4>
+                <p>Com a segurança militar garantida, D. Dinis focou-se no desenvolvimento interno, fundando a Universidade e fomentando a agricultura.</p>
+            </div>
+            <div class="guide-chapter">
+                <h3>3. A Segunda Dinastia: Avis</h3>
+                <p><em>A Era dos Descobrimentos</em></p>
+                <p>De D. João I a D. Sebastião, Portugal transformou-se num império global, descobrindo o Brasil e o caminho marítimo para a Índia.</p>
+            </div>
+             <div class="guide-chapter">
+                <h3>4. A Terceira Dinastia: Filipina</h3>
+                <p><em>O Domínio Espanhol (1581-1640)</em></p>
+                <p>Período de União Ibérica onde Portugal manteve alguma autonomia sob reis espanhóis, mas acabou arrastado para conflitos globais.</p>
+            </div>
+            <div class="guide-chapter">
+                <h3>5. A Quarta Dinastia: Bragança</h3>
+                <p><em>A Restauração</em></p>
+                <p>Iniciada com a revolução de 1640, esta dinastia viu a opulência do ouro do Brasil e as lutas liberais do século XIX.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="view-quiz" class="view-section">
+        <div class="quiz-container">
+            <div style="text-align: center; margin-bottom: 30px;">
+                <h2>Questionário Real</h2>
+                <p>Teste os seus conhecimentos sobre as quatro dinastias de Portugal.</p>
+            </div>
+
+            <div id="quiz-start-screen" class="glass-panel" style="text-align: center; padding: 40px;">
+                <i class="fas fa-scroll fa-3x" style="color: var(--gold); margin-bottom: 20px;"></i>
+                <h3>Pronto para o desafio?</h3>
+                <p style="margin-bottom: 20px;">Responda a 15 questões e obtenha o seu Certificado de Historiador Real.</p>
+                
+                <input type="text" id="quiz-username" placeholder="Escreva o seu nome..." style="padding: 12px; border-radius: 8px; border: 1px solid var(--gold); background: rgba(0,0,0,0.5); color: #fff; width: 80%; max-width: 300px; margin-bottom: 20px; font-family: 'Lato', sans-serif;">
+                <br>
+                <button class="btn btn-primary" onclick="startQuiz()">Começar Questionário</button>
+            </div>
+
+            <div id="quiz-game-screen" class="glass-panel" style="display: none;">
+                <div class="quiz-status-bar">
+                    <span id="quiz-q-number">Questão 1/15</span>
+                    <span id="quiz-score-display">Pontos: 0</span>
+                </div>
+                
+                <h3 id="quiz-question-text" style="color: #fff; margin-bottom: 25px; font-size: 1.2rem; min-height: 60px;"></h3>
+                
+                <div id="quiz-options-container">
+                    </div>
+
+                <div id="quiz-feedback" style="margin-top: 20px; padding: 15px; border-radius: 8px; display: none;"></div>
+
+                <div style="text-align: right; margin-top: 20px;">
+                    <button id="btn-quiz-next" class="btn btn-primary" onclick="nextQuestion()" style="display: none;">Seguinte <i class="fas fa-arrow-right"></i></button>
+                    <button id="btn-quiz-confirm" class="btn btn-primary" onclick="confirmAnswer()" style="display: none;">Confirmar Resposta</button>
+                </div>
+            </div>
+
+            <div id="quiz-result-screen" class="glass-panel" style="display: none; text-align: center;">
+                <h2 style="color: var(--gold);">Resultados Finais</h2>
+                <p id="quiz-final-msg" style="margin-bottom: 20px;"></p>
+
+                <div class="certificate-frame" id="certificate-area">
+                    <h3 style="font-family: 'Cinzel', serif; letter-spacing: 2px; margin-bottom: 10px;">CERTIFICADO DE MÉRITO</h3>
+                    <p>Pelo conhecimento demonstrado sobre a História de Portugal</p>
+                    <div class="cert-name" id="cert-user-name">Nome do Aluno</div>
+                    <p style="margin: 15px 0;">Concluiu o Questionário Real com a pontuação de:</p>
+                    <div class="cert-score" id="cert-score-val">0 / 150</div>
+                    <p id="cert-rank" style="font-style: italic; color: var(--gold);">Grau: Aprendiz</p>
+                    <div style="margin-top: 20px; font-size: 0.8rem; opacity: 0.7;">Museu Real Virtual</div>
+                </div>
+
+                <div style="margin-top: 20px; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+                    <button class="btn btn-outline" onclick="restartQuiz()"><i class="fas fa-redo"></i> Tentar Novamente</button>
+                    <button class="btn btn-primary" onclick="showReviewScreen()"><i class="fas fa-list-ul"></i> Rever Respostas</button>
+                    <button class="btn btn-outline" onclick="window.print()"><i class="fas fa-print"></i> Imprimir</button>
+                </div>
+            </div>
+
+            <div id="quiz-review-screen" class="glass-panel" style="display: none;">
+                <h2 style="color: var(--gold); text-align: center; margin-bottom: 20px;">Revisão Detalhada</h2>
+                <div id="review-list"></div>
+                <div style="text-align: center; margin-top: 20px;">
+                    <button class="btn btn-outline" onclick="backToResults()">Voltar aos Resultados</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="view-timeline" class="view-section">
+        <div style="text-align: center; margin-bottom: 30px;">
+            <h2>Centro de Cronologia</h2>
+            <p>Descubra a linha do tempo ou desafie o seu conhecimento.</p>
+            <div id="timeline-filter-info" style="display:none; color:var(--gold); margin-top:10px;">
+                <i class="fas fa-filter"></i> A jogar com: <span id="timeline-current-filter"></span>
+                <button onclick="clearTimelineFilter()" style="background:none; border:none; color:#fff; cursor:pointer; margin-left:10px; text-decoration:underline;">(Limpar Filtro)</button>
+            </div>
+        </div>
+        <div class="glass-panel" style="display: flex; justify-content: center; gap: 15px; margin-bottom: 30px; flex-wrap: wrap;">
+            <button class="btn btn-primary" onclick="switchTimelineMode('view')"><i class="fas fa-eye"></i> Explorar Linha</button>
+            <button class="btn btn-outline" onclick="switchTimelineMode('order')"><i class="fas fa-sort-numeric-down"></i> Ordenar Reis</button>
+            <button class="btn btn-outline" onclick="switchTimelineMode('match')"><i class="fas fa-link"></i> Correspondência</button>
+        </div>
+        <div id="timeline-mode-view" class="timeline-mode">
+            <div class="glass-panel" style="padding: 10px;">
+                <div id="timeline-track" class="timeline-track"></div>
+            </div>
+        </div>
+        <div id="timeline-mode-order" class="timeline-mode" style="display: none; text-align: center;">
+            <div class="glass-panel">
+                <h3>Ordene a História</h3>
+                <div id="order-game-board" class="order-container"></div>
+                <div id="order-feedback" style="margin: 15px 0; font-weight: bold; min-height: 24px;"></div>
+                <button class="btn btn-primary" onclick="checkOrderGame()">Verificar</button>
+                <button class="btn btn-outline" onclick="initOrderGame()"><i class="fas fa-redo"></i> Novo Jogo</button>
+            </div>
+        </div>
+        <div id="timeline-mode-match" class="timeline-mode" style="display: none; text-align: center;">
+            <div class="glass-panel">
+                <h3>Quem é Quem?</h3>
+                <div id="match-game-board" class="match-grid">
+                    <div id="match-col-left" style="display:flex; flex-direction:column; gap:15px;"></div>
+                    <div id="match-col-right" style="display:flex; flex-direction:column; gap:15px;"></div>
+                </div>
+                <div id="match-feedback" style="margin: 15px 0; font-weight: bold; min-height: 24px;"></div>
+                <button class="btn btn-outline" onclick="initMatchGame()"><i class="fas fa-redo"></i> Reiniciar</button>
+            </div>
+        </div>
+    </section>
+
+    <section id="view-game" class="view-section">
+        <div style="display: flex; flex-direction: column; align-items: center;">
+            <div class="glass-panel" style="width: 100%; max-width: 800px; text-align: center; margin-bottom: 20px; transition: border-color 0.5s;" id="escape-room-panel">
+                <h2 style="color: var(--gold); margin-bottom: 10px;">Escape Room Histórico</h2>
+                <p id="room-description" style="margin-bottom: 20px; font-style: italic; opacity: 0.8;">Estás preso na sala da 1ª Dinastia...</p>
+                <div id="room-status" class="room-status-bar">
+                    <div style="text-align: left;">
+                        <span style="font-size: 0.9rem; opacity: 0.8;">Dinastia</span>
+                        <div id="room-dynasty-name" style="font-weight: bold; font-size: 1.1rem;">Borgonha</div>
+                    </div>
+                    <div class="progress-container"><div id="room-progress" class="progress-bar"></div></div>
+                    <div style="text-align: right;">
+                        <span style="font-size: 0.9rem; opacity: 0.8;">Influência</span>
+                        <div style="font-weight: bold; font-size: 1.1rem;"><span id="current-score">0</span>/<span id="target-score">50</span></div>
+                    </div>
+                </div>
+                <div id="game-controls">
+                    <p style="margin-bottom: 20px;">Responde corretamente para ganhar influência e obter a chave.</p>
+                    <button class="btn btn-primary" onclick="exploreRoom()" style="font-size: 1.2rem;"><i class="fas fa-search"></i> INVESTIGAR SALA</button>
+                </div>
+                <div id="game-question" style="display: none; text-align: left; margin-top: 20px;">
+                    <h3 id="q-text" style="color: #fff; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">Pergunta?</h3>
+                    <div id="q-options" style="display: flex; flex-direction: column; gap: 10px;"></div>
+                </div>
+                <div id="game-feedback-area" style="margin-top: 15px; display: none; padding: 15px; border-radius: 8px;"></div>
+                <div id="room-door-area" class="room-door locked">
+                    <i class="fas fa-door-closed fa-3x" id="door-icon" style="margin-bottom: 10px; display: block;"></i>
+                    <div id="door-message">A porta para a próxima era está trancada.</div>
+                    <button id="btn-next-room" class="btn btn-outline" style="display: none; margin-top: 15px;" onclick="advanceDynasty()">ABRIR PORTA <i class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- GENERIC MODALS -->
+    <div id="modal-archive" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <button class="modal-nav-arrow nav-prev" onclick="navigateModal(-1)"><i class="fas fa-chevron-left"></i></button>
+            <button class="modal-nav-arrow nav-next" onclick="navigateModal(1)"><i class="fas fa-chevron-right"></i></button>
+            <div id="modal-header" class="modal-header-img">
+                <img id="m-avatar" class="modal-avatar" src="" alt="Retrato Real">
+                <div class="modal-title-area">
+                    <h2 id="m-name">Nome do Rei</h2>
+                    <span id="m-cognome" style="color: var(--gold); font-size: 1.2rem; font-style: italic;">O Cognome</span>
+                    <div id="m-dynasty" style="font-family: 'Cinzel', serif; font-size: 1rem; margin-top: 5px; font-weight: bold; text-shadow: 1px 1px 3px #000;"></div>
+                </div>
+                <button id="btn-open-infographic" class="btn btn-infographic" onclick="openInfographic()"><i class="fas fa-image"></i> Ver Infografia</button>
+            </div>
+            <div class="modal-body">
+                <div class="tabs">
+                    <button class="tab-btn active" onclick="switchTab('bio')">Biografia</button>
+                    <button class="tab-btn" onclick="switchTab('pol')">Factos</button>
+                </div>
+                <div id="tab-bio" class="tab-content-panel active"></div>
+                <div id="tab-pol" class="tab-content-panel"><ul id="m-facts-list"></ul></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-infographic-container" class="modal">
+        <div class="infographic-content">
+            <span class="close-modal" style="position: absolute; top: 20px; right: 30px; z-index: 2005;" onclick="closeInfographic()">&times;</span>
+            <img id="infographic-full-img" src="" alt="Infografia Completa">
+        </div>
+    </div>
+
+    <!-- PACK OPENING MODAL -->
+    <div id="pack-opening-modal" class="pack-modal">
+        <h2 style="color: var(--gold); text-transform: uppercase;">A Abrir Pacote...</h2>
+        <div class="pack-cards-container" id="pack-cards-container"></div>
+        <button class="btn btn-primary" onclick="closePackModal()" style="margin-top: 30px;">Continuar</button>
+    </div>
+
+    <script>
+        // --- BASE DE DADOS ---
+        const db = [
+            {
+                id: 0,
+                name: "1ª Dinastia: Borgonha",
+                aka: "Dinastia Afonsina (1139-1383)",
+                color: "#8b0000",
+                img: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Marabotin_en_or_%C3%A0_l%27effigie_de_Sanche_I.jpg/220px-Marabotin_en_or_%C3%A0_l%27effigie_de_Sanche_I.jpg",
+                kings: [
+                    { 
+                        name: "D. Afonso I", 
+                        cognome: "O Conquistador", 
+                        dates: "1143-1185", 
+                        birthDeath: "N: 25.06.1111 (Guimarães) | F: 06.12.1185 (Coimbra)",
+                        filiation: "D. Henrique de Borgonha e D. Teresa",
+                        union: "D. Mafalda de Sabóia",
+                        img: "./dafonsohenriques.jpg", 
+                        infographic: "./info.afonsohenriques.jpg",
+                        facts: [
+                            "1128 – Batalha de S. Mamede (24 de junho): assume o Condado Portucalense",
+                            "1131 – Funda o Mosteiro de Santa Cruz de Coimbra",
+                            "1139 – Batalha de Ourique: Título de Rei",
+                            "1143 – Tratado de Zamora: independência de Portugal",
+                            "1147 – Conquistas de Santarém e Lisboa",
+                            "1179 – Bula Manifestis Probatum: reconhecimento papal"
+                        ] 
+                    },
+                    { 
+                        name: "D. Sancho I", 
+                        cognome: "O Povoador", 
+                        dates: "1185-1211", 
+                        birthDeath: "N: 11.11.1154 (Coimbra) | F: 26.03.1211 (Coimbra)",
+                        filiation: "D. Afonso Henriques e D. Mafalda de Sabóia",
+                        union: "D. Dulce de Aragão",
+                        img: "./dsanchoI.jpg", 
+                        infographic: "./info.sanchoI.jpg",
+                        facts: [
+                            "1189 – Conquista de Silves (perdida em 1191)",
+                            "Promoveu intensamente o povoamento do território",
+                            "Concedeu forais a várias povoações (Gouveia, Covilhã, Viseu, Bragança)",
+                            "Acumulou grande tesouro real"
+                        ] 
+                    },
+                    { 
+                        name: "D. Afonso II", 
+                        cognome: "O Gordo", 
+                        dates: "1211-1223", 
+                        birthDeath: "N: 23.04.1185 (Coimbra) | F: 25.03.1223 (Coimbra)",
+                        filiation: "D. Sancho I e D. Dulce de Aragão",
+                        union: "D. Urraca de Castela",
+                        img: "./dafonsoII.jpg", 
+                        infographic: "./info.afonsoII.jpg",
+                        facts: [
+                            "1211 – Primeiras Leis Gerais (Cortes de Coimbra)",
+                            "1212 – Apoio na Batalha de Navas de Tolosa",
+                            "1217 – Conquista de Alcácer do Sal",
+                            "1220 – Inquirições Gerais para recuperar bens da coroa"
+                        ] 
+                    },
+                    { 
+                        name: "D. Sancho II", 
+                        cognome: "O Capelo", 
+                        dates: "1223-1248", 
+                        birthDeath: "N: 08.09.1209 (Coimbra) | F: 04.01.1248 (Toledo)",
+                        filiation: "D. Afonso II e D. Urraca de Castela",
+                        union: "D. Mécia Lopes de Haro",
+                        img: "./dsanchoII.jpg", 
+                        infographic: "./info.sanchoII.jpg",
+                        facts: [
+                            "Conquistou Elvas, Juromenha, Serpa e Aljustrel",
+                            "1245 – Bula 'Grandi non immerito' do Papa Inocêncio IV que o depõe",
+                            "1248 – Morre exilado em Toledo"
+                        ] 
+                    },
+                    { 
+                        name: "D. Afonso III", 
+                        cognome: "O Bolonhês", 
+                        dates: "1248-1279", 
+                        birthDeath: "N: 05.05.1210 (Coimbra) | F: 16.02.1279 (Lisboa)",
+                        filiation: "D. Afonso II e D. Urraca de Castela",
+                        union: "1ª: Matilde de Bolonha; 2ª: D. Beatriz de Castela",
+                        img: "./dafonsoIII.jpg", 
+                        infographic: "./info.afonsoIII.jpg",
+                        facts: [
+                            "1249 – Conquista definitiva do Algarve (Faro e Silves)",
+                            "1254 – Cortes de Leiria: entrada dos representantes dos concelhos",
+                            "1255 – Transferência da Capital para Lisboa",
+                            "1267 – Tratado de Badajoz: fronteira no Guadiana"
+                        ] 
+                    },
+                    { 
+                        name: "D. Dinis", 
+                        cognome: "O Lavrador", 
+                        dates: "1279-1325", 
+                        birthDeath: "N: 09.10.1261 (Lisboa) | F: 07.01.1325 (Odivelas)",
+                        filiation: "D. Afonso III e D. Beatriz de Castela",
+                        union: "D. Isabel de Aragão (Rainha Santa)",
+                        img: "./ddinis.jpg", 
+                        infographic: "./info.dinis.jpg",
+                        facts: [
+                            "1290 – Fundação do Estudo Geral (Universidade)",
+                            "1297 – Tratado de Alcanizes: fixa as fronteiras terrestres",
+                            "Impulso na agricultura e plantação do Pinhal de Leiria",
+                            "Criou a primeira Bolsa de Comércio"
+                        ] 
+                    },
+                    { 
+                        name: "D. Afonso IV", 
+                        cognome: "O Bravo", 
+                        dates: "1325-1357", 
+                        birthDeath: "N: 08.02.1291 (Lisboa) | F: 28.05.1357 (Lisboa)",
+                        filiation: "D. Dinis e D. Isabel de Aragão",
+                        union: "D. Beatriz de Castela",
+                        img: "./dafonsoIV.jpg", 
+                        infographic: "./info.afonsoIV.jpg",
+                        facts: [
+                            "1340 – Batalha do Salado (ajuda a Castela)",
+                            "1348 – Peste Negra devasta o país",
+                            "1355 – Execução de Inês de Castro por ordem régia",
+                            "Guerra civil com o filho Pedro"
+                        ] 
+                    },
+                    { 
+                        name: "D. Pedro I", 
+                        cognome: "O Justiceiro", 
+                        dates: "1357-1367", 
+                        birthDeath: "N: 08.04.1320 (Coimbra) | F: 18.01.1367 (Estremoz)",
+                        filiation: "D. Afonso IV e D. Beatriz de Castela",
+                        union: "D. Constança Manuel (casou secretamente com Inês de Castro)",
+                        img: "./dpedroI.jpg", 
+                        infographic: "./info.pedro.jpg",
+                        facts: [
+                            "1360 – Declaração de Cantanhede: afirma casamento com Inês",
+                            "1361 – Trasladação do corpo de Inês para Alcobaça",
+                            "Beneplácito Régio: controlo de documentos papais",
+                            "Reforma da Justiça"
+                        ] 
+                    },
+                    { 
+                        name: "D. Fernando I", 
+                        cognome: "O Formoso", 
+                        dates: "1367-1383", 
+                        birthDeath: "N: 31.10.1345 (Coimbra) | F: 22.10.1383 (Lisboa)",
+                        filiation: "D. Pedro I e D. Constança Manuel",
+                        union: "D. Leonor Teles",
+                        img: "./dfernandoI.jpg", 
+                        infographic: "./info.fernando.jpg",
+                        facts: [
+                            "1373 – Tratado de Tagilde (aliança com Inglaterra)",
+                            "1375 – Lei das Sesmarias",
+                            "Construção da Muralha Fernandina em Lisboa",
+                            "1383 – Tratado de Salvaterra de Magos: crise de sucessão"
+                        ] 
+                    }
+                ]
+            },
+            {
+                id: 1, name: "2ª Dinastia: Avis", aka: "A Expansão (1385-1580)", color: "#2e8b57",
+                img: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/D._Jo%C3%A3o_II_em_iluminura_do_Livro_dos_Copos_%281490-1498%29.png/220px-D._Jo%C3%A3o_II_em_iluminura_do_Livro_dos_Copos_%281490-1498%29.png",
+                kings: [
+                    { 
+                        name: "D. João I", 
+                        cognome: "O de Boa Memória", 
+                        dates: "1385-1433", 
+                        birthDeath: "N: 11.04.1357 (Lisboa) | F: 14.08.1433 (Lisboa)",
+                        filiation: "D. Pedro I e Teresa Lourenço",
+                        union: "D. Filipa de Lencastre",
+                        img: "./djoaoI.jpg", 
+                        infographic: "./info.joaoI.jpg",
+                        facts: [
+                            "1385 – Aclamado nas Cortes de Coimbra (6 de abril)",
+                            "1385 – Batalha de Aljubarrota (14 de agosto)",
+                            "1386 – Tratado de Windsor: aliança Luso-Britânica",
+                            "1415 – Conquista de Ceuta: início da Expansão"
+                        ] 
+                    },
+                    { 
+                        name: "D. Duarte", 
+                        cognome: "O Eloquente", 
+                        dates: "1433-1438", 
+                        birthDeath: "N: 31.10.1391 (Viseu) | F: 09.09.1438 (Tomar)",
+                        filiation: "D. João I e D. Filipa de Lencastre",
+                        union: "D. Leonor de Aragão",
+                        img: "./dduarte.jpg", 
+                        infographic: "./info.duarte.jpg",
+                        facts: [
+                            "1434 – Promulga a Lei Mental",
+                            "1437 – Desastre de Tânger",
+                            "Escreveu o 'Leal Conselheiro'",
+                            "Reinado curto marcado pela peste e depressão"
+                        ] 
+                    },
+                    { 
+                        name: "D. Afonso V", 
+                        cognome: "O Africano", 
+                        dates: "1438-1481", 
+                        birthDeath: "N: 15.01.1432 (Sintra) | F: 28.08.1481 (Sintra)",
+                        filiation: "D. Duarte e D. Leonor de Aragão",
+                        union: "1ª: D. Isabel de Coimbra; 2ª: D. Joana de Castela",
+                        img: "./dafonsoV.jpg", 
+                        infographic: "./info.afonsoV.jpg",
+                        facts: [
+                            "1449 – Batalha de Alfarrobeira (morte do Infante D. Pedro)",
+                            "1458 – Conquista de Alcácer Ceguer",
+                            "1471 – Conquista de Arzila e Tânger",
+                            "1476 – Batalha de Toro: derrota na pretensão ao trono castelhano"
+                        ] 
+                    },
+                    { 
+                        name: "D. João II", 
+                        cognome: "O Príncipe Perfeito", 
+                        dates: "1481-1495", 
+                        birthDeath: "N: 03.03.1455 (Lisboa) | F: 25.10.1495 (Alvor)",
+                        filiation: "D. Afonso V e D. Isabel de Coimbra",
+                        union: "D. Leonor de Viseu",
+                        img: "./djoaoII.jpg", 
+                        infographic: "./info.joaoII.jpg",
+                        facts: [
+                            "1483/84 – Execução dos Duques de Bragança e Viseu (controlo da nobreza)",
+                            "1488 – Bartolomeu Dias dobra o Cabo das Tormentas",
+                            "1494 – Tratado de Tordesilhas",
+                            "Planeamento da viagem à Índia"
+                        ] 
+                    },
+                    { 
+                        name: "D. Manuel I", 
+                        cognome: "O Venturoso", 
+                        dates: "1495-1521", 
+                        birthDeath: "N: 31.05.1469 (Alcochete) | F: 13.12.1521 (Lisboa)",
+                        filiation: "Infante D. Fernando e D. Beatriz",
+                        union: "1ª: Isabel de Castela; 2ª: Maria de Castela; 3ª: Leonor de Áustria",
+                        img: "./dmanuelI.jpg", 
+                        infographic: "./info.manuel.jpg",
+                        facts: [
+                            "1498 – Vasco da Gama chega à Índia",
+                            "1500 – Pedro Álvares Cabral descobre o Brasil",
+                            "1496 – Expulsão dos Judeus e Mouros",
+                            "Apogeu do Estilo Manuelino (Jerónimos, Torre de Belém)"
+                        ] 
+                    },
+                    { 
+                        name: "D. João III", 
+                        cognome: "O Piedoso", 
+                        dates: "1521-1557", 
+                        birthDeath: "N: 06.06.1502 (Lisboa) | F: 11.06.1557 (Lisboa)",
+                        filiation: "D. Manuel I e D. Maria de Aragão",
+                        union: "D. Catarina de Áustria",
+                        img: "./djoaoIII.jpg", 
+                        infographic: "./info.joaoIII.jpg",
+                        facts: [
+                            "1534 – Início da colonização do Brasil (Capitanias)",
+                            "1536 – Estabelecimento da Inquisição em Portugal",
+                            "1540 – Entrada da Companhia de Jesus",
+                            "1550 – Abandono de praças no Norte de África (Safim, Azamor)"
+                        ] 
+                    },
+                    { 
+                        name: "D. Sebastião", 
+                        cognome: "O Desejado", 
+                        dates: "1557-1578", 
+                        birthDeath: "N: 20.01.1554 (Lisboa) | F: 04.08.1578 (Alcácer-Quibir)",
+                        filiation: "Príncipe João e D. Joana de Áustria",
+                        union: "Solteiro",
+                        img: "./dsebastiao.jpg", 
+                        infographic: "./info.sebastiao.jpg",
+                        facts: [
+                            "1568 – Assume o governo aos 14 anos",
+                            "1578 – Batalha de Alcácer-Quibir: derrota militar e morte/desaparecimento",
+                            "Gerou o mito do Sebastianismo",
+                            "Crise dinástica por falta de herdeiros"
+                        ] 
+                    },
+                    { 
+                        name: "D. Henrique", 
+                        cognome: "O Casto", 
+                        dates: "1578-1580", 
+                        birthDeath: "N: 31.01.1512 (Lisboa) | F: 31.01.1580 (Almeirim)",
+                        filiation: "D. Manuel I e D. Maria de Aragão",
+                        union: "Celibato (Cardeal)",
+                        img: "./dhenrique.jpg", 
+                        infographic: "./info.henrique.jpg",
+                        facts: [
+                            "1580 – Cortes de Almeirim (tentativa de resolver sucessão)",
+                            "Era Cardeal-Arcebispo de Évora",
+                            "Morreu sem nomear sucessor",
+                            "Abre portas à União Ibérica"
+                        ] 
+                    },
+                    { 
+                        name: "D. António", 
+                        cognome: "O Prior do Crato", 
+                        dates: "1580", 
+                        birthDeath: "N: 1531 (Lisboa) | F: 1595 (Paris)",
+                        filiation: "Infante D. Luís e Violante Gomes",
+                        union: "Solteiro",
+                        img: "./dantonio.jpg", 
+                        infographic: "./info.antonio.jpg",
+                        facts: [
+                            "1580 – Aclamado rei pelo povo",
+                            "1580 – Derrotado na Batalha de Alcântara pelo Duque de Alba",
+                            "Governou a partir da Ilha Terceira (Açores) até 1583",
+                            "Morreu no exílio em França"
+                        ] 
+                    }
+                ]
+            },
+            {
+                id: 2, name: "3ª Dinastia: Filipina", aka: "União Ibérica (1581-1640)", color: "#daa520", img: "https://upload.wikimedia.org/wikipedia/commons/d/df/Philip_II.jpg",
+                kings: [
+                    { 
+                        name: "Filipe I", 
+                        cognome: "O Prudente", 
+                        dates: "1581-1598", 
+                        birthDeath: "N: 21.05.1527 (Valladolid) | F: 13.09.1598 (Escorial)",
+                        filiation: "Carlos V e Isabel de Portugal",
+                        union: "Várias (incluindo Maria Manuela de Portugal)",
+                        img: "./dfilipeI.jpg", 
+                        infographic: "./info.filipeI.jpg",
+                        facts: [
+                            "1581 – Cortes de Tomar: jurado rei de Portugal",
+                            "1588 – Armada Invencível contra Inglaterra",
+                            "Respeitou a autonomia administrativa portuguesa",
+                            "Construção do Escorial"
+                        ] 
+                    },
+                    { 
+                        name: "Filipe II", 
+                        cognome: "O Pio", 
+                        dates: "1598-1621", 
+                        birthDeath: "N: 14.04.1578 (Madrid) | F: 31.03.1621 (Madrid)",
+                        filiation: "Filipe I (II de Espanha) e Ana de Áustria",
+                        union: "Margarida de Áustria",
+                        img: "./dfilipeII.jpg", 
+                        infographic: "./info.filipeII.jpg",
+                        facts: [
+                            "1603 – Ordenações Filipinas",
+                            "1619 – Visita faustosa a Lisboa",
+                            "Perda de territórios no Oriente para Holandeses",
+                            "Expulsão dos Mouriscos"
+                        ] 
+                    },
+                    { 
+                        name: "Filipe III", 
+                        cognome: "O Grande", 
+                        dates: "1621-1640", 
+                        birthDeath: "N: 08.04.1605 (Valladolid) | F: 17.09.1665 (Madrid)",
+                        filiation: "Filipe II (III de Espanha) e Margarida de Áustria",
+                        union: "Isabel de Bourbon",
+                        img: "./dfilipeIII.jpg", 
+                        infographic: "./info.filipeIII.jpg",
+                        facts: [
+                            "Guerra dos Trinta Anos",
+                            "1637 – Revolta do Manuelinho em Évora",
+                            "Política centralizadora de Olivares",
+                            "1640 – Restauração da Independência Portuguesa (1 de dezembro)"
+                        ] 
+                    }
+                ]
+            },
+            {
+                id: 3, name: "4ª Dinastia: Bragança", aka: "Restauração (1640-1910)", color: "#4169e1", img: "https://upload.wikimedia.org/wikipedia/commons/7/79/Joao_IV_proclaimed_king-modificated.jpg",
+                kings: [
+                    { 
+                        name: "D. João IV", 
+                        cognome: "O Restaurador", 
+                        dates: "1640-1656", 
+                        birthDeath: "N: 18.03.1604 (Vila Viçosa) | F: 06.11.1656 (Lisboa)",
+                        filiation: "D. Teodósio II de Bragança e Ana de Velasco",
+                        union: "D. Luísa de Gusmão",
+                        img: "./djoaoIV.jpg", 
+                        infographic: "./info.joaoIV.jpg",
+                        facts: [
+                            "1640 – Restauração da Independência",
+                            "1646 – Consagração a N. Sra. da Conceição (Padroeira)",
+                            "Criação do Conselho Ultramarino",
+                            "Guerra da Restauração nas fronteiras"
+                        ] 
+                    },
+                    { 
+                        name: "D. Afonso VI", 
+                        cognome: "O Vitorioso", 
+                        dates: "1656-1683", 
+                        birthDeath: "N: 21.08.1643 (Lisboa) | F: 12.09.1683 (Sintra)",
+                        filiation: "D. João IV e D. Luísa de Gusmão",
+                        union: "D. Maria Francisca de Sabóia",
+                        img: "./dafonsoVI.jpg", 
+                        infographic: "./info.afonsoVI.jpg",
+                        facts: [
+                            "1663 – Batalha do Ameixial",
+                            "1665 – Batalha de Montes Claros",
+                            "1667 – Golpe de Estado: irmão Pedro assume regência",
+                            "1668 – Tratado de Paz com Espanha (reconhecimento da independência)"
+                        ] 
+                    },
+                    { 
+                        name: "D. Pedro II", 
+                        cognome: "O Pacífico", 
+                        dates: "1683-1706", 
+                        birthDeath: "N: 26.04.1648 (Lisboa) | F: 09.12.1706 (Alcântara)",
+                        filiation: "D. João IV e D. Luísa de Gusmão",
+                        union: "1ª: Maria Francisca de Sabóia; 2ª: Maria Sofia de Neuburgo",
+                        img: "./dpedroII.jpg", 
+                        infographic: "./info.pedroII.jpg",
+                        facts: [
+                            "1697 – Descoberta de ouro no Brasil (Minas Gerais)",
+                            "1703 – Tratado de Methuen (Panos e Vinhos)",
+                            "Envolvimento na Guerra de Sucessão de Espanha",
+                            "Dissolução das Cortes"
+                        ] 
+                    },
+                    { 
+                        name: "D. João V", 
+                        cognome: "O Magnânimo", 
+                        dates: "1706-1750", 
+                        birthDeath: "N: 22.10.1689 (Lisboa) | F: 31.07.1750 (Lisboa)",
+                        filiation: "D. Pedro II e D. Maria Sofia de Neuburgo",
+                        union: "D. Maria Ana de Áustria",
+                        img: "./djoaoV.jpg", 
+                        infographic: "./info.joaoV.jpg",
+                        facts: [
+                            "1717 – Batalha de Matapão (contra Turcos)",
+                            "1717 – Início da construção do Convento de Mafra",
+                            "Construção do Aqueduto das Águas Livres",
+                            "Absolutismo Régio e fausto com ouro do Brasil"
+                        ] 
+                    },
+                    { 
+                        name: "D. José I", 
+                        cognome: "O Reformador", 
+                        dates: "1750-1777", 
+                        birthDeath: "N: 06.06.1714 (Lisboa) | F: 24.02.1777 (Lisboa)",
+                        filiation: "D. João V e D. Maria Ana de Áustria",
+                        union: "D. Mariana Vitória de Bourbon",
+                        img: "./djose.jpg", 
+                        infographic: "./info.jose.jpg",
+                        facts: [
+                            "1755 – Terramoto de Lisboa (1 de novembro)",
+                            "Governo do Marquês de Pombal",
+                            "1758 – Atentado contra o Rei (Processo dos Távora)",
+                            "1759 – Expulsão dos Jesuítas"
+                        ] 
+                    },
+                    { 
+                        name: "D. Maria I", 
+                        cognome: "A Piedosa", 
+                        dates: "1777-1816", 
+                        birthDeath: "N: 17.12.1734 (Lisboa) | F: 20.03.1816 (Rio de Janeiro)",
+                        filiation: "D. José I e D. Mariana Vitória",
+                        union: "D. Pedro III (tio)",
+                        img: "./dmaria.jpg", 
+                        infographic: "./info.maria.jpg",
+                        facts: [
+                            "1777 – A 'Viradeira': demissão de Pombal",
+                            "Construção da Basílica da Estrela",
+                            "1807 – Fuga da Corte para o Brasil (Invasões Francesas)",
+                            "1792 – Príncipe João assume governo devido à doença mental da rainha"
+                        ] 
+                    },
+                    { 
+                        name: "D. João VI", 
+                        cognome: "O Clemente", 
+                        dates: "1816-1826", 
+                        birthDeath: "N: 13.05.1767 (Lisboa) | F: 10.03.1826 (Lisboa)",
+                        filiation: "D. Maria I e D. Pedro III",
+                        union: "D. Carlota Joaquina de Bourbon",
+                        img: "./djoaoVI.jpg", 
+                        infographic: "./info.joaoVI.jpg",
+                        facts: [
+                            "1815 – Elevação do Brasil a Reino",
+                            "1820 – Revolução Liberal no Porto",
+                            "1821 – Regresso do rei a Portugal e juramento da Constituição (1822)",
+                            "1822 – Independência do Brasil (perda da colónia)"
+                        ] 
+                    },
+                    { 
+                        name: "D. Pedro IV", 
+                        cognome: "O Libertador", 
+                        dates: "1826", 
+                        birthDeath: "N: 12.10.1798 (Queluz) | F: 24.09.1834 (Queluz)",
+                        filiation: "D. João VI e D. Carlota Joaquina",
+                        union: "1ª: Maria Leopoldina; 2ª: Amélia de Beauharnais",
+                        img: "./dpedroIV.jpg", 
+                        infographic: "./info.pedroIV.jpg",
+                        facts: [
+                            "1822 – Grito do Ipiranga (Imperador do Brasil)",
+                            "1826 – Outorga a Carta Constitucional",
+                            "Abdicou do trono português na filha Maria II",
+                            "1832-34 – Liderou Liberais na Guerra Civil"
+                        ] 
+                    },
+                    { 
+                        name: "D. Miguel I", 
+                        cognome: "O Absolutista", 
+                        dates: "1828-1834", 
+                        birthDeath: "N: 26.10.1802 (Queluz) | F: 14.11.1866 (Alemanha)",
+                        filiation: "D. João VI e D. Carlota Joaquina",
+                        union: "Adelaide de Löwenstein",
+                        img: "./dmiguel.jpg", 
+                        infographic: "./info.miguel.jpg",
+                        facts: [
+                            "1828 – Aclamado Rei Absoluto (golpe)",
+                            "1832-1834 – Guerra Civil Portuguesa",
+                            "1834 – Convenção de Évora-Monte: rendição e exílio",
+                            "Proibido de voltar a Portugal"
+                        ] 
+                    },
+                    { 
+                        name: "D. Maria II", 
+                        cognome: "A Educadora", 
+                        dates: "1834-1853", 
+                        birthDeath: "N: 04.04.1819 (Rio de Janeiro) | F: 15.11.1853 (Lisboa)",
+                        filiation: "D. Pedro IV e D. Maria Leopoldina",
+                        union: "1ª: Augusto de Beauharnais; 2ª: Fernando II",
+                        img: "./dmariaII.jpg", 
+                        infographic: "./info.mariaII.jpg",
+                        facts: [
+                            "1836 – Revolução de Setembro",
+                            "1846 – Revolta da Maria da Fonte",
+                            "Reformas no ensino (Passos Manuel)",
+                            "Pacificação política com a Regeneração (1851)"
+                        ] 
+                    },
+                    { 
+                        name: "D. Pedro V", 
+                        cognome: "O Esperançoso", 
+                        dates: "1853-1861", 
+                        birthDeath: "N: 16.09.1837 (Lisboa) | F: 11.11.1861 (Lisboa)",
+                        filiation: "D. Maria II e D. Fernando II",
+                        union: "D. Estefânia de Hohenzollern",
+                        img: "./dpedroV.jpg", 
+                        infographic: "./info.pedroV.jpg",
+                        facts: [
+                            "1856 – Inauguração do Caminho de Ferro",
+                            "1855 – Introdução do Telégrafo Elétrico",
+                            "Curso Superior de Letras",
+                            "Morreu jovem de febre tifóide"
+                        ] 
+                    },
+                    { 
+                        name: "D. Luís I", 
+                        cognome: "O Popular", 
+                        dates: "1861-1889", 
+                        birthDeath: "N: 31.10.1838 (Lisboa) | F: 19.10.1889 (Cascais)",
+                        filiation: "D. Maria II e D. Fernando II",
+                        union: "D. Maria Pia de Sabóia",
+                        img: "./dluis.jpg", 
+                        infographic: "./info.luis.jpg",
+                        facts: [
+                            "1867 – Abolição da Pena de Morte",
+                            "1869 – Abolição da Escravatura em todo o império",
+                            "Construção da Ponte Maria Pia e D. Luís (Porto)",
+                            "Tradutor de Shakespeare"
+                        ] 
+                    },
+                    { 
+                        name: "D. Carlos I", 
+                        cognome: "O Diplomata", 
+                        dates: "1889-1908", 
+                        birthDeath: "N: 28.09.1863 (Lisboa) | F: 01.02.1908 (Lisboa)",
+                        filiation: "D. Luís I e D. Maria Pia de Sabóia",
+                        union: "D. Amélia de Orleães",
+                        img: "./dcarlos.jpg", 
+                        infographic: "./info.carlos.jpg",
+                        facts: [
+                            "1890 – Ultimato Britânico (Mapa Cor-de-Rosa)",
+                            "1891 – Revolta republicana de 31 de Janeiro (Porto)",
+                            "Campanhas Oceanográficas",
+                            "1908 – Regicídio: assassinado com o herdeiro D. Luís Filipe"
+                        ] 
+                    },
+                    { 
+                        name: "D. Manuel II", 
+                        cognome: "O Patriota", 
+                        dates: "1908-1910", 
+                        birthDeath: "N: 15.11.1889 (Lisboa) | F: 02.07.1932 (Londres)",
+                        filiation: "D. Carlos I e D. Amélia de Orleães",
+                        union: "Augusta Vitória de Hohenzollern",
+                        img: "./dmanuelII.jpg", 
+                        infographic: "./info.manuelII.jpg",
+                        facts: [
+                            "1910 – Implantação da República (5 de outubro)",
+                            "Exílio em Inglaterra",
+                            "Legou os seus bens ao Estado Português",
+                            "Grande bibliófilo"
+                        ] 
+                    }
+                ]
+            }
+        ];
+
+        // Processamento para ter IDs únicos em todos os reis
+        let allKings = [];
+        db.forEach((d, dIdx) => {
+            d.kings.forEach((k, kIdx) => {
+                allKings.push({...k, dynastyId: dIdx, dynastyName: d.name, dynastyColor: d.color, id: `${dIdx}-${kIdx}`});
+            });
+        });
+
+        // --- FLASHCARDS DATA ---
+        const flashcardsDb = [
+            // 1ª Dinastia
+            { dynastyId: 0, q: "Qual dinastia reinou em Portugal entre 1096 e 1383, derivando da casa ducal da Borgonha?", a: "A Dinastia de Borgonha, também conhecida como Afonsina." },
+            { dynastyId: 0, q: "Quem foi o fundador da dinastia de Borgonha em Portugal?", a: "D. Afonso Henriques, que se autoproclamou rei de Portugal em 1139." },
+            { dynastyId: 0, q: "Em que batalha, em 1128, as tropas de Afonso Henriques derrotaram as de sua mãe?", a: "Na Batalha de São Mamede, consagrando a sua autoridade." },
+            { dynastyId: 0, q: "Que tratado, assinado em 1143, reconheceu o título de rei a D. Afonso Henriques?", a: "O Tratado de Zamora." },
+            { dynastyId: 0, q: "Que monarca ficou conhecido como 'O Lavrador' e fundou a primeira universidade?", a: "D. Dinis." },
+            { dynastyId: 0, q: "Em que batalha D. Afonso IV auxiliou Castela contra os mouros em 1340?", a: "Batalha do Salado." },
+            { dynastyId: 0, q: "Qual cognome foi atribuído a D. Pedro I devido à sua justiça implacável?", a: "O Justiceiro ou O Cruel." },
+            { dynastyId: 0, q: "Que tratado no reinado de D. Fernando I previa o casamento da sua filha com o rei de Castela?", a: "Tratado de Salvaterra de Magos." },
+            
+            // 2ª Dinastia
+            { dynastyId: 1, q: "Quem foi o fundador da Dinastia de Avis?", a: "D. João I, Mestre de Avis." },
+            { dynastyId: 1, q: "Qual a batalha decisiva em 1385 que garantiu a independência?", a: "Batalha de Aljubarrota." },
+            { dynastyId: 1, q: "Que monarca é conhecido como 'O Príncipe Perfeito'?", a: "D. João II." },
+            { dynastyId: 1, q: "Em que reinado se descobriu o caminho marítimo para a Índia?", a: "No reinado de D. Manuel I." },
+            { dynastyId: 1, q: "O que aconteceu em Alcácer-Quibir em 1578?", a: "D. Sebastião desapareceu em batalha, gerando uma crise de sucessão." },
+            { dynastyId: 1, q: "Quem governou após o desaparecimento de D. Sebastião?", a: "O Cardeal D. Henrique." },
+            { dynastyId: 1, q: "Quem foi o Prior do Crato que resistiu a Espanha?", a: "D. António." },
+            
+            // 3ª Dinastia
+            { dynastyId: 2, q: "Como se chama o período de 1581 a 1640 em Portugal?", a: "Domínio Filipino ou União Ibérica." },
+            { dynastyId: 2, q: "Quem foi o primeiro rei da Dinastia Filipina em Portugal?", a: "Filipe I (Filipe II de Espanha)." },
+            { dynastyId: 2, q: "Onde foi aclamado Filipe I rei de Portugal?", a: "Nas Cortes de Tomar em 1581." },
+            
+            // 4ª Dinastia
+            { dynastyId: 3, q: "Quem restaurou a independência em 1640?", a: "D. João IV, Duque de Bragança." },
+            { dynastyId: 3, q: "Qual o cognome de D. João V?", a: "O Magnânimo." },
+            { dynastyId: 3, q: "O que marcou o reinado de D. José I em 1755?", a: "O Grande Terramoto de Lisboa." },
+            { dynastyId: 3, q: "Quem foi o ministro todo-poderoso de D. José I?", a: "Marquês de Pombal." },
+            { dynastyId: 3, q: "Quem declarou a independência do Brasil?", a: "D. Pedro IV (Pedro I do Brasil)." },
+            { dynastyId: 3, q: "Quem foi o último rei de Portugal?", a: "D. Manuel II." },
+            { dynastyId: 3, q: "A Casa de Bragança descende de quem?", a: "D. Afonso, filho ilegítimo de D. João I." }
+        ];
+
+        // --- NAVEGAÇÃO ---
+        function router(viewId) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-menu button').forEach(el => el.classList.remove('active'));
+            document.getElementById(`view-${viewId}`).classList.add('active');
+            const navBtn = document.getElementById(`nav-${viewId}`);
+            if (navBtn) {
+                navBtn.classList.add('active');
+                if (navBtn.parentElement.classList.contains('dropdown-content')) {
+                     document.getElementById('nav-activities').classList.add('active');
+                }
+            }
+            
+            if (viewId === 'home') renderDashboard();
+            if (viewId === 'timeline') renderTimeline();
+            if (viewId === 'game') initEscapeRoom();
+            if (viewId === 'flashcards') initFlashcards();
+            if (viewId === 'album') initAlbum();
+        }
+
+        // --- DASHBOARD ---
+        function renderDashboard() {
+            const container = document.getElementById('dynasty-container');
+            if (container.children.length > 0) return;
+            db.forEach(d => {
+                const card = document.createElement('div');
+                card.className = 'dynasty-card';
+                card.style.borderColor = d.color;
+                card.onclick = () => openHall(d.id);
+                card.innerHTML = `
+                    <img src="${d.img}" class="dynasty-bg" alt="${d.name}">
+                    <div class="dynasty-content"><h2 style="color:${d.color}">${d.name}</h2><p>${d.aka}</p></div>`;
+                container.appendChild(card);
+            });
+        }
+
+        function openHall(dynastyId) {
+            const d = db[dynastyId];
+            router('hall');
+            document.getElementById('hall-content').innerHTML = `<h2 style="color:${d.color}; font-size:2rem;">${d.name}</h2><p>${d.aka}</p>`;
+            document.getElementById('hall-content').style.borderLeftColor = d.color;
+            const grid = document.getElementById('hall-kings');
+            grid.innerHTML = '';
+            d.kings.forEach((k, kIdx) => {
+                const kCard = document.createElement('div');
+                kCard.className = 'glass-panel king-card';
+                const uniqueId = `${dynastyId}-${kIdx}`;
+                const enrichedKing = allKings.find(ak => ak.id === uniqueId);
+                kCard.onclick = () => openModal(enrichedKing);
+                kCard.innerHTML = `<img src="${k.img}" class="king-avatar" style="border-color:${d.color}"><div class="king-name">${k.name}</div><div class="king-dates">${k.dates}</div>`;
+                grid.appendChild(kCard);
+            });
+        }
+
+        // --- STICKER ALBUM (CADERNETA) LOGIC ---
+        let albumState = {
+            collected: [], // Array of IDs ('0-1', '0-2') user has but hasn't pasted
+            pasted: []     // Array of IDs user has pasted
+        };
+        let currentAlbumDynasty = null;
+
+        function loadAlbumState() {
+            const saved = localStorage.getItem('ptKingsAlbumState');
+            if (saved) {
+                albumState = JSON.parse(saved);
+            }
+        }
+
+        function saveAlbumState() {
+            localStorage.setItem('ptKingsAlbumState', JSON.stringify(albumState));
+        }
+
+        function initAlbum() {
+            loadAlbumState();
+            const container = document.getElementById('album-dynasty-selector');
+            if (container.children.length === 0) {
+                db.forEach(d => {
+                    const card = document.createElement('div');
+                    card.className = 'dynasty-card';
+                    card.style.borderColor = d.color;
+                    card.style.height = '200px'; 
+                    card.onclick = () => selectAlbumDynasty(d.id);
+                    card.innerHTML = `
+                        <div class="dynasty-content" style="background:${d.color}cc; width:100%; height:100%; display:flex; flex-direction:column; justify-content:center;">
+                            <h2 style="color:#fff; font-size:1.5rem;">${d.name}</h2>
+                            <p style="color:#fff;">Abrir Caderneta</p>
+                        </div>`;
+                    container.appendChild(card);
+                });
+            }
+            showAlbumSelector();
+        }
+
+        function showAlbumSelector() {
+            document.getElementById('album-dynasty-selector').style.display = 'grid';
+            document.getElementById('album-area').style.display = 'none';
+            document.getElementById('inventory-bar').classList.add('hidden');
+        }
+
+        function selectAlbumDynasty(dynastyId) {
+            currentAlbumDynasty = dynastyId;
+            document.getElementById('album-dynasty-selector').style.display = 'none';
+            document.getElementById('album-area').style.display = 'block';
+            document.getElementById('inventory-bar').classList.remove('hidden');
+            
+            const dyn = db[dynastyId];
+            document.getElementById('album-title').textContent = dyn.name;
+            document.getElementById('album-title').style.color = dyn.color;
+
+            renderAlbumGrid();
+            renderInventory();
+        }
+
+        function renderAlbumGrid() {
+            const dyn = db[currentAlbumDynasty];
+            const grid = document.getElementById('sticker-grid');
+            grid.innerHTML = '';
+            
+            let pastedCount = 0;
+
+            dyn.kings.forEach((k, idx) => {
+                const uniqueId = `${currentAlbumDynasty}-${idx}`;
+                const isPasted = albumState.pasted.includes(uniqueId);
+                
+                const slot = document.createElement('div');
+                slot.className = `sticker-slot ${isPasted ? 'filled' : ''}`;
+                slot.dataset.id = uniqueId;
+                
+                // Drop Events
+                slot.ondragover = (e) => { e.preventDefault(); slot.classList.add('drag-hover'); };
+                slot.ondragleave = (e) => { slot.classList.remove('drag-hover'); };
+                slot.ondrop = (e) => dropSticker(e, slot);
+                
+                // Touch/Click fallback logic could go here, but focusing on Drag for now
+                slot.onclick = () => { if(isPasted) openModal(allKings.find(x => x.id === uniqueId)); };
+
+                if (isPasted) {
+                    pastedCount++;
+                    slot.innerHTML = `
+                        <div class="sticker-card" style="background-image: url('${k.img}');">
+                            <div class="sticker-info">
+                                <h4>${k.name}</h4>
+                                <span>${k.cognome}</span>
+                            </div>
+                        </div>`;
+                } else {
+                    slot.innerHTML = `
+                        <div class="sticker-number">${idx + 1}</div>
+                        <div class="sticker-placeholder-content">
+                            <i class="fas fa-user-circle fa-3x"></i>
+                            <div style="margin-top:5px; font-size:0.8rem;">${k.name}</div>
+                        </div>`;
+                }
+                
+                grid.appendChild(slot);
+            });
+
+            document.getElementById('album-progress-text').textContent = `${pastedCount}/${dyn.kings.length} Cromos`;
+        }
+
+        function renderInventory() {
+            const container = document.getElementById('inventory-slots');
+            container.innerHTML = '';
+            
+            const myStickers = albumState.collected.filter(id => !albumState.pasted.includes(id));
+            
+            if (myStickers.length === 0) {
+                container.innerHTML = '<div style="color: #666; font-size: 0.9rem; align-self: center;">Sem cromos novos...</div>';
+                return;
+            }
+
+            myStickers.forEach(id => {
+                const k = allKings.find(x => x.id === id);
+                if (!k) return;
+
+                const item = document.createElement('div');
+                item.className = 'inventory-item';
+                item.draggable = true;
+                item.ondragstart = (e) => {
+                    e.dataTransfer.setData("text/plain", id);
+                    item.classList.add('dragging');
+                };
+                
+                item.innerHTML = `<img src="${k.img}" alt="${k.name}">`;
+                container.appendChild(item);
+            });
+        }
+
+        function dropSticker(e, slot) {
+            e.preventDefault();
+            slot.classList.remove('drag-hover');
+            
+            const draggedId = e.dataTransfer.getData("text/plain");
+            const targetId = slot.dataset.id;
+
+            if (draggedId === targetId) {
+                // Success!
+                albumState.pasted.push(targetId);
+                // Optionally remove from collected list or keep it (keeping allows dupes logic later, but for now we filter in render)
+                
+                saveAlbumState();
+                renderAlbumGrid();
+                renderInventory();
+                
+                // Simple feedback effect
+                slot.style.animation = 'none';
+                slot.offsetHeight; /* trigger reflow */
+                slot.style.animation = 'stickerPop 0.5s';
+            } else {
+                // Wrong slot feedback
+                slot.style.borderColor = '#e74c3c';
+                setTimeout(() => slot.style.borderColor = '', 500);
+            }
+        }
+
+        function openPack() {
+            // Logic: Get 3 random kings from CURRENT dynasty (or global? Prompt says dynasty)
+            // Let's do current dynasty to help completion.
+            const dynKings = allKings.filter(k => k.dynastyId === currentAlbumDynasty);
+            
+            const newCards = [];
+            for(let i=0; i<3; i++) {
+                const r = Math.floor(Math.random() * dynKings.length);
+                const k = dynKings[r];
+                newCards.push(k);
+                
+                // Add to collection if not already fully pasted? 
+                // Let's allow duplicates in 'collected' but UI filters pasted ones out of inventory.
+                if (!albumState.collected.includes(k.id) && !albumState.pasted.includes(k.id)) {
+                     albumState.collected.push(k.id);
+                }
+            }
+            saveAlbumState();
+            renderInventory(); // Update background
+            
+            // Show Animation
+            const modal = document.getElementById('pack-opening-modal');
+            const container = document.getElementById('pack-cards-container');
+            container.innerHTML = '';
+            
+            modal.style.display = 'flex';
+            
+            newCards.forEach((k, idx) => {
+                const card = document.createElement('div');
+                card.className = 'new-card-reveal';
+                card.innerHTML = `<img src="${k.img}">`;
+                container.appendChild(card);
+                
+                setTimeout(() => {
+                    card.classList.add('revealed');
+                }, idx * 300 + 100);
+            });
+        }
+
+        function closePackModal() {
+            document.getElementById('pack-opening-modal').style.display = 'none';
+        }
+
+        // --- MODAL ---
+        let currentInfographicUrl = "";
+        let currentKingIndex = 0;
+
+        function openModal(king) {
+            const modal = document.getElementById('modal-archive');
+            currentKingIndex = allKings.findIndex(k => k.id === king.id);
+            updateModalContent(king);
+            switchTab('bio');
+            modal.style.display = 'flex';
+            setTimeout(() => modal.classList.add('show'), 10);
+        }
+
+        function updateModalContent(king) {
+            document.getElementById('m-name').textContent = king.name;
+            document.getElementById('m-cognome').textContent = king.cognome;
+            
+            const dynEl = document.getElementById('m-dynasty');
+            if (king.dynastyName) { dynEl.textContent = king.dynastyName; dynEl.style.color = king.dynastyColor; }
+            document.getElementById('modal-header').style.backgroundImage = `url('${king.img}')`;
+            document.getElementById('m-avatar').src = king.img;
+            
+            let cleanBirthDeath = king.birthDeath.replace(/N:\s?/g, '').replace(/F:\s?/g, '');
+
+            const bioContainer = document.getElementById('tab-bio');
+            let bioHTML = `
+                <div class="bio-field"><strong>Reinado:</strong> ${king.dates}</div>
+                <div class="bio-field"><strong>Nascimento/Morte:</strong> ${cleanBirthDeath}</div>
+                <div class="bio-field"><strong>Filiação:</strong> ${king.filiation}</div>
+                <div class="bio-field"><strong>União:</strong> ${king.union}</div>
+            `;
+            if(king.bio) bioHTML += `<div style="margin-top:20px; font-style:italic;">${king.bio}</div>`;
+            bioContainer.innerHTML = bioHTML;
+
+            document.getElementById('m-facts-list').innerHTML = king.facts.map(f => `<li>${f}</li>`).join('');
+            
+            currentInfographicUrl = king.infographic || "";
+            if (currentInfographicUrl) {
+                document.getElementById('btn-open-infographic').style.display = 'inline-flex';
+            } else {
+                document.getElementById('btn-open-infographic').style.display = 'none';
+            }
+        }
+
+        function navigateModal(dir) {
+            currentKingIndex = (currentKingIndex + dir + allKings.length) % allKings.length;
+            updateModalContent(allKings[currentKingIndex]);
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content-panel').forEach(p => p.classList.remove('active'));
+            if(tabId==='bio') document.querySelectorAll('.tab-btn')[0].classList.add('active');
+            if(tabId==='pol') document.querySelectorAll('.tab-btn')[1].classList.add('active');
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+        }
+
+        function closeModal() { document.getElementById('modal-archive').classList.remove('show'); setTimeout(() => document.getElementById('modal-archive').style.display = 'none', 300); }
+        function openZoomImage(url) { const m = document.getElementById('modal-infographic-container'); document.getElementById('infographic-full-img').src = url; m.style.display = 'flex'; setTimeout(() => m.classList.add('show'), 10); }
+        function openInfographic() { if(currentInfographicUrl) openZoomImage(currentInfographicUrl); }
+        function closeInfographic() { const m = document.getElementById('modal-infographic-container'); m.classList.remove('show'); setTimeout(() => { m.style.display = 'none'; document.getElementById('infographic-full-img').src = ""; }, 300); }
+        
+        window.onclick = function(e) { 
+            if (e.target == document.getElementById('modal-archive')) closeModal(); 
+            if (e.target == document.getElementById('modal-infographic-container')) closeInfographic(); 
+        }
+
+        // Acordeão
+        const acc = document.getElementsByClassName("accordion");
+        for (let i = 0; i < acc.length; i++) {
+          acc[i].addEventListener("click", function() {
+            this.classList.toggle("active");
+            var panel = this.nextElementSibling;
+            if (panel.style.maxHeight) { panel.style.maxHeight = null; } else { panel.style.maxHeight = panel.scrollHeight + "px"; } 
+          });
+        }
+
+        // --- FLASHCARDS LOGIC ---
+        let currentFlashcards = [];
+        let currentCardIndex = 0;
+        let selectedDynastyId = null;
+
+        function initFlashcards() {
+            const container = document.getElementById('flashcards-dynasty-selector');
+            if (container.children.length === 0) {
+                db.forEach(d => {
+                    const card = document.createElement('div');
+                    card.className = 'dynasty-card';
+                    card.style.borderColor = d.color;
+                    card.style.height = '200px'; 
+                    card.onclick = () => selectFlashcardDynasty(d.id);
+                    card.innerHTML = `
+                        <div class="dynasty-content" style="background:${d.color}cc; width:100%; height:100%; display:flex; flex-direction:column; justify-content:center;">
+                            <h2 style="color:#fff; font-size:1.5rem;">${d.name}</h2>
+                            <p style="color:#fff;">Praticar</p>
+                        </div>`;
+                    container.appendChild(card);
+                });
+            }
+            showFlashcardSelector();
+        }
+
+        function showFlashcardSelector() {
+            document.getElementById('flashcards-dynasty-selector').style.display = 'grid';
+            document.getElementById('flashcards-area').style.display = 'none';
+        }
+
+        function selectFlashcardDynasty(dynastyId) {
+            selectedDynastyId = dynastyId;
+            currentFlashcards = flashcardsDb.filter(fc => fc.dynastyId === dynastyId);
+            currentCardIndex = 0;
+            
+            if (currentFlashcards.length === 0) {
+                alert("Em breve teremos flashcards para esta dinastia!");
+                return;
+            }
+
+            document.getElementById('flashcards-dynasty-selector').style.display = 'none';
+            document.getElementById('flashcards-area').style.display = 'block';
+            document.getElementById('fc-dynasty-title').textContent = db[dynastyId].name;
+            document.getElementById('fc-dynasty-title').style.color = db[dynastyId].color;
+            
+            updateFlashcardView();
+        }
+
+        function updateFlashcardView() {
+            const card = document.querySelector('.flashcard');
+            card.classList.remove('flipped');
+            setTimeout(() => {
+                const fc = currentFlashcards[currentCardIndex];
+                document.getElementById('fc-front-text').textContent = fc.q;
+                document.getElementById('fc-back-text').textContent = fc.a;
+                document.getElementById('fc-counter').textContent = `${currentCardIndex + 1} / ${currentFlashcards.length}`;
+            }, 200);
+        }
+
+        function flipCard(card) { card.classList.toggle('flipped'); }
+        function navCard(direction) {
+            let nextIndex = currentCardIndex + direction;
+            if (nextIndex >= 0 && nextIndex < currentFlashcards.length) {
+                currentCardIndex = nextIndex;
+                updateFlashcardView();
+            }
+        }
+
+        function goToDynastyGames() {
+            router('timeline');
+            currentTimelineFilter = selectedDynastyId;
+            document.getElementById('timeline-filter-info').style.display = 'block';
+            document.getElementById('timeline-current-filter').textContent = db[selectedDynastyId].name;
+            switchTimelineMode('order'); 
+        }
+
+        // --- QUIZ REAL ---
+        const quizData = [
+            { id: 1, type: 'single', q: "Que monarca ficou conhecido como 'O Lavrador'?", options: ["D. Afonso Henriques", "D. Sancho I", "D. Dinis", "D. Fernando I"], correct: 2, explanation: "D. Dinis fundou a primeira Universidade em 1290 e focou-se no desenvolvimento agrícola." },
+            { id: 2, type: 'single', q: "O Tratado de Zamora (1143) foi crucial para:", options: ["Paz com Castela", "Casamento Real", "Independência de Portugal", "Aliança Inglesa"], correct: 2, explanation: "O Tratado de Zamora marcou o reconhecimento da independência de Portugal por Castela." },
+            { id: 3, type: 'single', q: "A Batalha de Aljubarrota (1385) garantiu o trono a:", options: ["D. Fernando", "D. João I", "D. Duarte", "D. Afonso V"], correct: 1, explanation: "A vitória consolidou D. João I, Mestre de Avis, no trono português." },
+            { id: 5, type: 'single', q: "A Restauração de 1640 aclamou como rei:", options: ["D. João IV", "D. Teodósio", "D. Duarte", "D. António"], correct: 0, explanation: "O Duque de Bragança foi aclamado como D. João IV em 1 de Dezembro de 1640." },
+            { id: 16, type: 'single', q: "Quem conquistou Ceuta em 1415?", options: ["D. Dinis", "D. João I", "D. Afonso V", "D. Manuel I"], correct: 1, explanation: "Foi D. João I quem liderou a conquista de Ceuta." },
+            { id: 17, type: 'single', q: "Qual o navegador que chegou à Índia em 1498?", options: ["Bartolomeu Dias", "Pedro Álvares Cabral", "Vasco da Gama", "Cristóvão Colombo"], correct: 2, explanation: "Vasco da Gama descobriu o caminho marítimo para a Índia." },
+            { id: 19, type: 'single', q: "Onde desapareceu o rei D. Sebastião?", options: ["Índia", "Brasil", "Alcácer-Quibir", "Ceuta"], correct: 2, explanation: "Na batalha de Alcácer-Quibir em Marrocos, em 1578." },
+            { id: 21, type: 'single', q: "Quem mandou construir o Convento de Mafra?", options: ["D. João V", "D. José I", "D. Maria I", "D. Pedro II"], correct: 0, explanation: "D. João V, cumprindo uma promessa pelo nascimento de um herdeiro." },
+            { id: 22, type: 'single', q: "Quem era o rei durante o Terramoto de 1755?", options: ["D. João V", "D. José I", "D. Maria I", "D. Pedro III"], correct: 1, explanation: "D. José I, embora o governo fosse liderado pelo Marquês de Pombal." },
+            { id: 24, type: 'single', q: "Quem proclamou a independência do Brasil?", options: ["D. João VI", "D. Pedro IV", "D. Miguel", "D. Carlos"], correct: 1, explanation: "D. Pedro IV de Portugal (Pedro I do Brasil) com o Grito do Ipiranga." }
+        ];
+
+        let quizState = { currentQ: 0, score: 0, user: "", answers: [], activeQuestions: [] };
+
+        function startQuiz() {
+            const nameInput = document.getElementById('quiz-username').value;
+            if(!nameInput.trim()) { alert("Por favor, introduza o seu nome."); return; }
+            const shuffled = [...quizData].sort(() => 0.5 - Math.random());
+            const selectedQuestions = shuffled.slice(0, 5); // Short demo quiz
+            quizState = { currentQ: 0, score: 0, user: nameInput, answers: [], activeQuestions: selectedQuestions };
+            document.getElementById('quiz-start-screen').style.display = 'none';
+            document.getElementById('quiz-result-screen').style.display = 'none';
+            document.getElementById('quiz-review-screen').style.display = 'none';
+            document.getElementById('quiz-game-screen').style.display = 'block';
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const q = quizState.activeQuestions[quizState.currentQ];
+            document.getElementById('quiz-q-number').textContent = `Questão ${quizState.currentQ + 1}/${quizState.activeQuestions.length}`;
+            document.getElementById('quiz-score-display').textContent = `Pontos: ${quizState.score}`;
+            document.getElementById('quiz-question-text').textContent = q.q;
+            document.getElementById('quiz-feedback').style.display = 'none';
+            document.getElementById('btn-quiz-next').style.display = 'none';
+            const container = document.getElementById('quiz-options-container');
+            container.innerHTML = '';
+            document.getElementById('btn-quiz-confirm').style.display = 'none';
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('div');
+                btn.className = 'quiz-option';
+                btn.textContent = opt;
+                btn.onclick = () => checkAnswer(idx);
+                btn.id = `opt-${idx}`;
+                container.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selectedIdx) {
+            const q = quizState.activeQuestions[quizState.currentQ];
+            const feedback = document.getElementById('quiz-feedback');
+            const container = document.getElementById('quiz-options-container');
+            quizState.answers.push({ q: q, selected: selectedIdx, correct: q.correct });
+            Array.from(container.children).forEach(c => { c.style.pointerEvents = 'none'; c.classList.add('disabled'); });
+
+            let isCorrect = false;
+            const selectedBtn = document.getElementById(`opt-${selectedIdx}`);
+            const correctBtn = document.getElementById(`opt-${q.correct}`);
+            
+            if (selectedIdx === q.correct) {
+                selectedBtn.classList.add('correct');
+                isCorrect = true;
+            } else {
+                selectedBtn.classList.add('wrong');
+                correctBtn.classList.add('correct');
+            }
+
+            if (isCorrect) {
+                quizState.score += 10;
+                feedback.innerHTML = `<strong style="color:#2ecc71">Correto!</strong><br><small>${q.explanation}</small>`;
+                feedback.style.border = '1px solid #2ecc71';
+                feedback.style.background = 'rgba(46, 204, 113, 0.2)';
+            } else {
+                feedback.innerHTML = `<strong style="color:#e74c3c">Incorreto.</strong><br><small>${q.explanation}</small>`;
+                feedback.style.border = '1px solid #e74c3c';
+                feedback.style.background = 'rgba(231, 76, 60, 0.2)';
+            }
+            feedback.style.display = 'block';
+            document.getElementById('btn-quiz-next').style.display = 'inline-block';
+        }
+
+        function nextQuestion() {
+            quizState.currentQ++;
+            if (quizState.currentQ < quizState.activeQuestions.length) { renderQuestion(); } else { showResults(); }
+        }
+
+        function showResults() {
+            document.getElementById('quiz-game-screen').style.display = 'none';
+            document.getElementById('quiz-result-screen').style.display = 'block';
+            const maxScore = quizState.activeQuestions.length * 10;
+            const percentage = (quizState.score / maxScore) * 100;
+            let rank = percentage === 100 ? "Historiador Real" : (percentage >= 50 ? "Cavaleiro" : "Escudeiro");
+            document.getElementById('cert-user-name').textContent = quizState.user;
+            document.getElementById('cert-score-val').textContent = `${quizState.score} / ${maxScore}`;
+            document.getElementById('cert-rank').textContent = `Grau: ${rank}`;
+        }
+
+        function showReviewScreen() {
+            document.getElementById('quiz-result-screen').style.display = 'none';
+            document.getElementById('quiz-review-screen').style.display = 'block';
+            const list = document.getElementById('review-list');
+            list.innerHTML = '';
+            quizState.answers.forEach((item, index) => {
+                const isRight = (item.selected === item.correct);
+                const div = document.createElement('div');
+                div.className = `review-item ${isRight ? 'correct' : 'wrong'}`;
+                div.innerHTML = `<div class="review-q">${index + 1}. ${item.q.q}</div><div class="review-ans">Sua resposta: <strong>${item.q.options[item.selected]}</strong></div><div class="review-explanation">${item.q.explanation}</div>`;
+                list.appendChild(div);
+            });
+        }
+        function backToResults() { document.getElementById('quiz-review-screen').style.display = 'none'; document.getElementById('quiz-result-screen').style.display = 'block'; }
+        function restartQuiz() { document.getElementById('quiz-result-screen').style.display = 'none'; document.getElementById('quiz-start-screen').style.display = 'block'; document.getElementById('quiz-username').value = ""; }
+
+        // --- TIMELINE & MINI GAMES ---
+        function switchTimelineMode(mode) {
+            document.querySelectorAll('.timeline-mode').forEach(el => el.style.display = 'none');
+            document.getElementById(`timeline-mode-${mode}`).style.display = 'block';
+            if(mode === 'view') renderTimeline();
+            if(mode === 'order') initOrderGame();
+            if(mode === 'match') initMatchGame();
+        }
+
+        function renderTimeline() {
+            const track = document.getElementById('timeline-track');
+            if(track.children.length > 0) return;
+            allKings.forEach(k => {
+                const item = document.createElement('div');
+                item.className = 'glass-panel';
+                item.style.minWidth = '220px'; item.style.textAlign = 'center'; item.style.borderTop = `4px solid ${k.dynastyColor}`; item.style.cursor = 'pointer';
+                item.onclick = () => openModal(k);
+                item.innerHTML = `<div style="font-weight:bold; font-size:1.2rem;">${k.dates.split('-')[0]}</div><img src="${k.img}" style="width:80px; height:80px; border-radius:50%; margin:10px 0; border:2px solid ${k.dynastyColor}; object-fit:cover;"><div style="font-weight:bold;">${k.name}</div><small>${k.dynastyName}</small>`;
+                track.appendChild(item);
+            });
+        }
+
+        let currentTimelineFilter = null;
+        function clearTimelineFilter() {
+            currentTimelineFilter = null;
+            document.getElementById('timeline-filter-info').style.display = 'none';
+            initOrderGame(); initMatchGame();
+        }
+
+        let currentOrderKings = [], selectedSwapIndex = null;
+        function initOrderGame() {
+            document.getElementById('order-feedback').textContent = ''; selectedSwapIndex = null;
+            let pool = currentTimelineFilter !== null ? allKings.filter(k => k.dynastyId === currentTimelineFilter) : allKings;
+            if(pool.length < 2) { document.getElementById('order-game-board').innerHTML = "<p>Não há reis suficientes.</p>"; return; }
+            currentOrderKings = [...pool].sort(() => 0.5 - Math.random()).slice(0, 4);
+            if(currentOrderKings.length > 1 && isSorted(currentOrderKings)) { let t = currentOrderKings[0]; currentOrderKings[0] = currentOrderKings[1]; currentOrderKings[1] = t; }
+            renderOrderBoard();
+        }
+        function isSorted(arr) { for (let i = 0; i < arr.length - 1; i++) if (parseInt(arr[i].dates.split('-')[0]) > parseInt(arr[i+1].dates.split('-')[0])) return false; return true; }
+        function renderOrderBoard() {
+            const board = document.getElementById('order-game-board'); board.innerHTML = '';
+            currentOrderKings.forEach((k, idx) => {
+                const card = document.createElement('div'); card.className = `order-card ${selectedSwapIndex === idx ? 'selected' : ''}`;
+                card.onclick = () => {
+                    if (selectedSwapIndex === null) selectedSwapIndex = idx;
+                    else if (selectedSwapIndex === idx) selectedSwapIndex = null;
+                    else { const t = currentOrderKings[selectedSwapIndex]; currentOrderKings[selectedSwapIndex] = currentOrderKings[idx]; currentOrderKings[idx] = t; selectedSwapIndex = null; }
+                    renderOrderBoard(); document.getElementById('order-feedback').textContent = '';
+                };
+                card.innerHTML = `<div class="order-number">${idx+1}º</div><img src="${k.img}" style="width:50px; border-radius:50%;"><div>${k.name}</div>`;
+                board.appendChild(card);
+            });
+        }
+        function checkOrderGame() { const fb = document.getElementById('order-feedback'); if(isSorted(currentOrderKings)) { fb.innerHTML = "<i class='fas fa-check'></i> Correto!"; fb.style.color="#2ecc71"; } else { fb.innerHTML = "Errado."; fb.style.color="#e74c3c"; } }
+
+        let matchGame = { left: null, found: 0, pairs: [] };
+        function initMatchGame() {
+            const lc = document.getElementById('match-col-left'), rc = document.getElementById('match-col-right'); lc.innerHTML=''; rc.innerHTML=''; matchGame={left:null, found:0, pairs:[]};
+            let pool = currentTimelineFilter !== null ? allKings.filter(k => k.dynastyId === currentTimelineFilter) : allKings;
+            if(pool.length < 2) { lc.innerHTML = "<p>Reis insuficientes.</p>"; return; }
+            let sel = [...pool].sort(()=>0.5-Math.random()).slice(0,4);
+            sel.forEach(k => {
+                const r = Math.random(); let txt, type, val;
+                if(currentTimelineFilter !== null) { if(r>0.5) { txt=`Facto: ${k.facts[0]}`; type='e'; val=k.id; } else { txt=`Cognome: "${k.cognome}"`; type='e'; val=k.id; } } 
+                else { if(r>0.66) { txt=`Dinastia: ${k.dynastyName}`; type='d'; val=k.dynastyId; } else if(r>0.33) { txt=`Facto: ${k.facts[0]}`; type='e'; val=k.id; } else { txt=`Cognome: "${k.cognome}"`; type='e'; val=k.id; } }
+                matchGame.pairs.push({id:k.id, name:k.name, dynId:k.dynastyId, txt:txt, type:type, val:val});
+            });
+            sel.forEach(i => {
+                const c = document.createElement('div'); c.className='match-card'; c.textContent=i.name;
+                c.onclick=()=> { if(c.classList.contains('matched'))return; document.querySelectorAll('#match-col-left .match-card').forEach(x=>x.classList.remove('selected')); c.classList.add('selected'); matchGame.left={el:c, id:i.id, dId:i.dynastyId}; };
+                lc.appendChild(c);
+            });
+            [...matchGame.pairs].sort(()=>0.5-Math.random()).forEach(p => {
+                const c = document.createElement('div'); c.className='match-card'; c.textContent=p.txt;
+                c.onclick=()=> {
+                    if(c.classList.contains('matched') || !matchGame.left) return;
+                    let match = (p.type==='e' && matchGame.left.id===p.val) || (p.type==='d' && String(matchGame.left.dId)===String(p.val));
+                    if(match) { matchGame.left.el.classList.add('matched'); c.classList.add('matched'); matchGame.left=null; document.getElementById('match-feedback').textContent="Correto!"; }
+                    else { c.classList.add('error'); setTimeout(()=>c.classList.remove('error'),500); }
+                };
+                rc.appendChild(c);
+            });
+        }
+
+        // --- ESCAPE ROOM ---
+        let gameDynasty = 0, roomScore = 0;
+        function initEscapeRoom() { if(gameDynasty > 3) gameDynasty = 0; roomScore = 0; updateRoomUI(); }
+        function updateRoomUI() {
+            const d = db[gameDynasty];
+            const p = document.getElementById('escape-room-panel');
+            if(!d) { p.innerHTML = `<h2>VITÓRIA!</h2><p>Conquistaste a Coroa da Sabedoria.</p><button class="btn btn-primary" onclick="gameDynasty=0;initEscapeRoom()">Reiniciar</button>`; return; }
+            document.getElementById('room-dynasty-name').textContent = d.name;
+            document.getElementById('current-score').textContent = roomScore;
+            document.getElementById('room-progress').style.width = `${Math.min((roomScore/50)*100, 100)}%`;
+            if(roomScore >= 50) {
+                document.getElementById('room-door-area').className = "room-door unlocked";
+                document.getElementById('door-message').textContent = "Porta Destrancada!";
+                document.getElementById('btn-next-room').style.display = "inline-block";
+                document.getElementById('game-controls').style.display = 'none';
+            } else {
+                document.getElementById('room-door-area').className = "room-door locked";
+                document.getElementById('door-message').textContent = "Porta Trancada.";
+                document.getElementById('btn-next-room').style.display = "none";
+                document.getElementById('game-controls').style.display = 'block';
+            }
+        }
+        function exploreRoom() {
+            document.getElementById('game-controls').style.display = 'none';
+            const k = db[gameDynasty].kings[Math.floor(Math.random()*db[gameDynasty].kings.length)];
+            const q = document.getElementById('game-question'); q.style.display='block';
+            document.getElementById('q-text').textContent = `Quem é "${k.cognome}"?`;
+            const opts = [k.name, ...db[gameDynasty].kings.filter(x=>x.name!==k.name).sort(()=>0.5-Math.random()).slice(0,2).map(x=>x.name)].sort(()=>0.5-Math.random());
+            document.getElementById('q-options').innerHTML = opts.map(o => `<button class="btn btn-outline" onclick="checkEscapeAnswer('${o}'==='${k.name}')" style="width:100%">${o}</button>`).join('');
+        }
+        function checkEscapeAnswer(correct) {
+            document.getElementById('game-question').style.display='none';
+            const fb = document.getElementById('game-feedback-area'); fb.style.display='block';
+            if(correct) { roomScore+=10; fb.innerHTML="Correto! (+10)"; fb.style.background="#2ecc71"; }
+            else { roomScore-=5; fb.innerHTML="Errado! (-5)"; fb.style.background="#e74c3c"; }
+            if(roomScore<0) { alert("Game Over"); gameDynasty=0; initEscapeRoom(); } else updateRoomUI();
+        }
+        function advanceDynasty() { gameDynasty++; roomScore=0; document.getElementById('game-feedback-area').style.display='none'; updateRoomUI(); }
+
+        renderDashboard();
+    </script>
+</body>
+</html>
