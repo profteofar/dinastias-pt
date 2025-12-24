@@ -72,6 +72,13 @@
         .btn-outline { background: transparent; border: 2px solid var(--gold); color: var(--gold); }
         .btn-outline:hover { background: var(--gold); color: #000; }
         
+        .btn-danger-outline {
+            background: transparent; border: 2px solid #e74c3c; color: #e74c3c;
+        }
+        .btn-danger-outline:hover {
+            background: #e74c3c; color: #fff; box-shadow: 0 0 15px rgba(231, 76, 60, 0.4);
+        }
+
         .btn-infographic {
             margin-left: auto; 
             margin-bottom: 5px;
@@ -637,6 +644,9 @@
         <div style="text-align: center; margin-bottom: 30px;">
             <h2>Caderneta de Cromos Real</h2>
             <p>Complete a coleção real! Abra pacotes e arraste os cromos para o lugar correto.</p>
+            <button onclick="resetAlbum()" class="btn btn-danger-outline" style="margin-top: 15px; font-size: 0.85rem;">
+                <i class="fas fa-trash-alt"></i> Reiniciar Coleção
+            </button>
         </div>
 
         <div id="album-dynasty-selector" class="dynasty-selector" style="margin-bottom: 40px;"></div>
@@ -1283,7 +1293,7 @@
                         facts: [
                             "1580 – Aclamado rei pelo povo",
                             "1580 – Derrotado na Batalha de Alcântara pelo Duque de Alba",
-                            "Governou a partir da Ilha Terceira (Açores) até 1583",
+                            "Governo a partir da Ilha Terceira (Açores) até 1583",
                             "Morreu no exílio em França"
                         ] 
                     }
@@ -1873,6 +1883,23 @@
 
         function closePackModal() {
             document.getElementById('pack-opening-modal').style.display = 'none';
+        }
+
+        // --- FUNCIONALIDADE ADICIONADA: REINICIAR CADERNETA ---
+        function resetAlbum() {
+            if(confirm("Tem a certeza que deseja apagar todo o progresso da Caderneta? Esta ação não pode ser desfeita.")) {
+                albumState = { collected: [], pasted: [] };
+                saveAlbumState();
+                
+                // Se estiver dentro de uma dinastia específica, atualiza a visualização
+                if(document.getElementById('album-area').style.display !== 'none') {
+                    renderAlbumGrid();
+                    renderInventory();
+                }
+                
+                // Feedback visual simples
+                alert("A sua caderneta foi reiniciada. Boa sorte na nova coleção!");
+            }
         }
 
         // --- MODAL ---
