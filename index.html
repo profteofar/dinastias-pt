@@ -785,6 +785,19 @@
                 <p>Iniciada com a revolução de 1640, esta dinastia viu a opulência do ouro do Brasil e as lutas liberais do século XIX.</p>
             </div>
         </div>
+
+        <!-- RESTORED: ANÁLISE POLÍTICA -->
+        <h3 style="color: var(--gold); border-bottom: 2px solid var(--gold); margin-bottom: 20px; padding-bottom: 10px;">Análise Política</h3>
+        <div class="glass-panel" style="padding: 10px;">
+            <button class="accordion">1ª Dinastia (Borgonha): Fundação e Consolidação</button>
+            <div class="panel"><p>O período fundador, marcado pelo duplo desafio de definir fronteiras (Reconquista) e afirmar a independência.</p></div>
+            <button class="accordion">2ª Dinastia (Avis): Expansão e Poder Global</button>
+            <div class="panel"><p>Transformou Portugal numa potência global, centralizando o poder régio mas criando dependência do império.</p></div>
+            <button class="accordion">3ª Dinastia (Filipina): A União Ibérica</button>
+            <div class="panel"><p>Ilustra os perigos de uma união dinástica desigual, onde a autonomia inicial se perdeu.</p></div>
+            <button class="accordion">4ª Dinastia (Bragança): Restauração e Absolutismo</button>
+            <div class="panel"><p>Enfrentou o desafio de legitimar uma nova casa real, a opulência do ouro e as guerras liberais.</p></div>
+        </div>
     </section>
 
     <section id="view-quiz" class="view-section">
@@ -797,7 +810,7 @@
             <div id="quiz-start-screen" class="glass-panel" style="text-align: center; padding: 40px;">
                 <i class="fas fa-scroll fa-3x" style="color: var(--gold); margin-bottom: 20px;"></i>
                 <h3>Pronto para o desafio?</h3>
-                <p style="margin-bottom: 20px;">Responda a 15 questões e obtenha o seu Certificado de Historiador Real.</p>
+                <p style="margin-bottom: 20px;">Responda a 20 questões e obtenha o seu Certificado de Historiador Real.</p>
                 
                 <input type="text" id="quiz-username" placeholder="Escreva o seu nome..." style="padding: 12px; border-radius: 8px; border: 1px solid var(--gold); background: rgba(0,0,0,0.5); color: #fff; width: 80%; max-width: 300px; margin-bottom: 20px; font-family: 'Lato', sans-serif;">
                 <br>
@@ -2015,18 +2028,38 @@
             switchTimelineMode('order'); 
         }
 
-        // --- QUIZ REAL ---
+        // --- QUIZ REAL (RESTORED COMPLETE LOGIC) ---
         const quizData = [
-            { id: 1, type: 'single', q: "Que monarca ficou conhecido como 'O Lavrador'?", options: ["D. Afonso Henriques", "D. Sancho I", "D. Dinis", "D. Fernando I"], correct: 2, explanation: "D. Dinis fundou a primeira Universidade em 1290 e focou-se no desenvolvimento agrícola." },
+            { id: 1, type: 'single', q: "Que monarca ficou conhecido como 'O Lavrador' e fundou a primeira universidade?", options: ["D. Afonso Henriques", "D. Sancho I", "D. Dinis", "D. Fernando I"], correct: 2, explanation: "D. Dinis fundou a primeira Universidade em 1290 e focou-se no desenvolvimento agrícola." },
             { id: 2, type: 'single', q: "O Tratado de Zamora (1143) foi crucial para:", options: ["Paz com Castela", "Casamento Real", "Independência de Portugal", "Aliança Inglesa"], correct: 2, explanation: "O Tratado de Zamora marcou o reconhecimento da independência de Portugal por Castela." },
             { id: 3, type: 'single', q: "A Batalha de Aljubarrota (1385) garantiu o trono a:", options: ["D. Fernando", "D. João I", "D. Duarte", "D. Afonso V"], correct: 1, explanation: "A vitória consolidou D. João I, Mestre de Avis, no trono português." },
+            { id: 4, type: 'single', q: "Quem introduziu a Inquisição em Portugal (1536)?", options: ["D. Manuel I", "D. João III", "D. Sebastião", "D. João II"], correct: 1, explanation: "Foi D. João III quem solicitou e instalou o Tribunal do Santo Ofício em Portugal." },
             { id: 5, type: 'single', q: "A Restauração de 1640 aclamou como rei:", options: ["D. João IV", "D. Teodósio", "D. Duarte", "D. António"], correct: 0, explanation: "O Duque de Bragança foi aclamado como D. João IV em 1 de Dezembro de 1640." },
-            { id: 16, type: 'single', q: "Quem conquistou Ceuta em 1415?", options: ["D. Dinis", "D. João I", "D. Afonso V", "D. Manuel I"], correct: 1, explanation: "Foi D. João I quem liderou a conquista de Ceuta." },
+            { id: 6, type: 'multi', q: "Eventos do reinado de D. João II (Selecione corretos)", options: ["Bartolomeu Dias dobra o Cabo", "Tratado de Tordesilhas", "Vasco da Gama chega à Índia", "Execução do Duque de Bragança"], correct: [0, 1, 3], explanation: "Vasco da Gama só chegou à Índia no reinado seguinte (D. Manuel I)." },
+            { id: 7, type: 'multi', q: "Causas da crise de 1383-1385:", options: ["Morte de D. Fernando", "Peste Negra", "Ameaça Castelhana", "Casamento de D. Beatriz"], correct: [0, 2, 3], explanation: "A crise deveu-se à morte do rei sem herdeiro varão e à pretensão de Castela ao trono via D. Beatriz." },
+            { id: 8, type: 'multi', q: "Reinado de D. Afonso II:", options: ["Leis Gerais", "Conquista de Ceuta", "Inquirições", "Conflitos com o Clero"], correct: [0, 2, 3], explanation: "Afonso II focou-se na legislação e recuperação de bens da coroa, entrando em conflito com a Igreja." },
+            { id: 9, type: 'tf', q: "D. Afonso III concluiu a Reconquista no Algarve.", options: ["Verdadeiro", "Falso"], correct: 0, explanation: "Verdadeiro. Conquistou definitivamente Faro e Silves em 1249." },
+            { id: 10, type: 'tf', q: "O Ultimato Britânico (1890) foi no reinado de D. Luís I.", options: ["Verdadeiro", "Falso"], correct: 1, explanation: "Falso. Ocorreu já no reinado de D. Carlos I." },
+            { id: 11, type: 'tf', q: "D. Pedro I perdoou os assassinos de Inês de Castro.", options: ["Verdadeiro", "Falso"], correct: 1, explanation: "Falso. Executou-os cruelmente, arrancando-lhes o coração." },
+            { id: 12, type: 'tf', q: "A corte fugiu para o Brasil em 1807 devido a Napoleão.", options: ["Verdadeiro", "Falso"], correct: 0, explanation: "Verdadeiro. Para evitar a captura pelas tropas de Junot." },
+            { id: 13, type: 'tf', q: "D. Miguel I defendeu o Liberalismo.", options: ["Verdadeiro", "Falso"], correct: 1, explanation: "Falso. D. Miguel I foi o líder da fação Absolutista na Guerra Civil." },
+            { id: 14, type: 'single', q: "O Tratado de Methuen (1703) envolveu:", options: ["Ouro e Prata", "Panos e Vinhos", "Especiarias", "Escravos"], correct: 1, explanation: "Troca de vinhos portugueses por têxteis ingleses." },
+            { id: 15, type: 'single', q: "Quem morreu no Regicídio de 1908?", options: ["D. Carlos I e Príncipe Luís Filipe", "D. Manuel II", "D. Pedro V", "D. João VI"], correct: 0, explanation: "O Rei e o Príncipe Herdeiro foram assassinados no Terreiro do Paço." },
+            { id: 16, type: 'single', q: "Quem conquistou Ceuta em 1415, iniciando a Expansão?", options: ["D. Dinis", "D. João I", "D. Afonso V", "D. Manuel I"], correct: 1, explanation: "Foi D. João I quem liderou a conquista de Ceuta." },
             { id: 17, type: 'single', q: "Qual o navegador que chegou à Índia em 1498?", options: ["Bartolomeu Dias", "Pedro Álvares Cabral", "Vasco da Gama", "Cristóvão Colombo"], correct: 2, explanation: "Vasco da Gama descobriu o caminho marítimo para a Índia." },
+            { id: 18, type: 'single', q: "Que rei ficou conhecido como 'O Príncipe Perfeito'?", options: ["D. João II", "D. Pedro I", "D. Sebastião", "D. Duarte"], correct: 0, explanation: "D. João II, pela sua habilidade política e centralizadora." },
             { id: 19, type: 'single', q: "Onde desapareceu o rei D. Sebastião?", options: ["Índia", "Brasil", "Alcácer-Quibir", "Ceuta"], correct: 2, explanation: "Na batalha de Alcácer-Quibir em Marrocos, em 1578." },
+            { id: 20, type: 'single', q: "Quantos reis teve a Dinastia Filipina em Portugal?", options: ["1", "2", "3", "4"], correct: 2, explanation: "Três reis: Filipe I, Filipe II e Filipe III (II, III e IV de Espanha)." },
             { id: 21, type: 'single', q: "Quem mandou construir o Convento de Mafra?", options: ["D. João V", "D. José I", "D. Maria I", "D. Pedro II"], correct: 0, explanation: "D. João V, cumprindo uma promessa pelo nascimento de um herdeiro." },
             { id: 22, type: 'single', q: "Quem era o rei durante o Terramoto de 1755?", options: ["D. João V", "D. José I", "D. Maria I", "D. Pedro III"], correct: 1, explanation: "D. José I, embora o governo fosse liderado pelo Marquês de Pombal." },
-            { id: 24, type: 'single', q: "Quem proclamou a independência do Brasil?", options: ["D. João VI", "D. Pedro IV", "D. Miguel", "D. Carlos"], correct: 1, explanation: "D. Pedro IV de Portugal (Pedro I do Brasil) com o Grito do Ipiranga." }
+            { id: 23, type: 'single', q: "Que rainha sofreu de doença mental no final da vida?", options: ["D. Maria I", "D. Maria II", "D. Amélia", "D. Estefânia"], correct: 0, explanation: "D. Maria I, a Piedosa." },
+            { id: 24, type: 'single', q: "Quem proclamou a independência do Brasil?", options: ["D. João VI", "D. Pedro IV", "D. Miguel", "D. Carlos"], correct: 1, explanation: "D. Pedro IV de Portugal (Pedro I do Brasil) com o Grito do Ipiranga." },
+            { id: 25, type: 'single', q: "Que rei aboliu a pena de morte em Portugal?", options: ["D. Pedro IV", "D. Maria II", "D. Luís I", "D. Carlos I"], correct: 2, explanation: "D. Luís I, em 1867 (para crimes civis)." },
+            { id: 26, type: 'multi', q: "Quais destes são reis da 1ª Dinastia?", options: ["D. Sancho I", "D. Afonso II", "D. João I", "D. Manuel I"], correct: [0, 1], explanation: "D. João I e D. Manuel I pertencem à 2ª Dinastia (Avis)." },
+            { id: 27, type: 'multi', q: "Navegadores Portugueses (Selecione)", options: ["Vasco da Gama", "Pedro Álvares Cabral", "Cristóvão Colombo", "James Cook"], correct: [0, 1], explanation: "Colombo serviu Espanha e Cook era inglês." },
+            { id: 28, type: 'tf', q: "D. Afonso Henriques nasceu em Lisboa.", options: ["Verdadeiro", "Falso"], correct: 1, explanation: "Falso. Provavelmente nasceu em Guimarães ou Viseu. Lisboa era moura." },
+            { id: 29, type: 'tf', q: "A Restauração da Independência foi a 1 de Dezembro.", options: ["Verdadeiro", "Falso"], correct: 0, explanation: "Verdadeiro. 1 de Dezembro de 1640." },
+            { id: 30, type: 'tf', q: "D. Manuel II foi o último rei de Portugal.", options: ["Verdadeiro", "Falso"], correct: 0, explanation: "Verdadeiro. Foi deposto pela Implantação da República em 1910." }
         ];
 
         let quizState = { currentQ: 0, score: 0, user: "", answers: [], activeQuestions: [] };
@@ -2035,7 +2068,7 @@
             const nameInput = document.getElementById('quiz-username').value;
             if(!nameInput.trim()) { alert("Por favor, introduza o seu nome."); return; }
             const shuffled = [...quizData].sort(() => 0.5 - Math.random());
-            const selectedQuestions = shuffled.slice(0, 5); // Short demo quiz
+            const selectedQuestions = shuffled.slice(0, 20); // Restore to 20 questions
             quizState = { currentQ: 0, score: 0, user: nameInput, answers: [], activeQuestions: selectedQuestions };
             document.getElementById('quiz-start-screen').style.display = 'none';
             document.getElementById('quiz-result-screen').style.display = 'none';
@@ -2053,15 +2086,31 @@
             document.getElementById('btn-quiz-next').style.display = 'none';
             const container = document.getElementById('quiz-options-container');
             container.innerHTML = '';
-            document.getElementById('btn-quiz-confirm').style.display = 'none';
-            q.options.forEach((opt, idx) => {
-                const btn = document.createElement('div');
-                btn.className = 'quiz-option';
-                btn.textContent = opt;
-                btn.onclick = () => checkAnswer(idx);
-                btn.id = `opt-${idx}`;
-                container.appendChild(btn);
-            });
+            
+            // Logic for Multi vs Single
+            if (q.type === 'multi') {
+                document.getElementById('btn-quiz-confirm').style.display = 'inline-block';
+                q.options.forEach((opt, idx) => {
+                    const btn = document.createElement('div');
+                    btn.className = 'quiz-option';
+                    btn.textContent = opt;
+                    btn.onclick = function() { 
+                        if(!this.classList.contains('disabled')) this.classList.toggle('selected'); 
+                    };
+                    btn.id = `opt-${idx}`;
+                    container.appendChild(btn);
+                });
+            } else {
+                document.getElementById('btn-quiz-confirm').style.display = 'none';
+                q.options.forEach((opt, idx) => {
+                    const btn = document.createElement('div');
+                    btn.className = 'quiz-option';
+                    btn.textContent = opt;
+                    btn.onclick = () => checkAnswer(idx);
+                    btn.id = `opt-${idx}`;
+                    container.appendChild(btn);
+                });
+            }
         }
 
         function checkAnswer(selectedIdx) {
@@ -2077,9 +2126,11 @@
             
             if (selectedIdx === q.correct) {
                 selectedBtn.classList.add('correct');
+                selectedBtn.innerHTML += ' <i class="fas fa-check" style="margin-left:auto;"></i>';
                 isCorrect = true;
             } else {
                 selectedBtn.classList.add('wrong');
+                selectedBtn.innerHTML += ' <i class="fas fa-times" style="margin-left:auto;"></i>';
                 correctBtn.classList.add('correct');
             }
 
@@ -2097,6 +2148,46 @@
             document.getElementById('btn-quiz-next').style.display = 'inline-block';
         }
 
+        function confirmAnswer() {
+            const q = quizState.activeQuestions[quizState.currentQ];
+            const container = document.getElementById('quiz-options-container');
+            const selectedIndices = [];
+
+            Array.from(container.children).forEach((btn, idx) => {
+                if (btn.classList.contains('selected')) selectedIndices.push(idx);
+                btn.style.pointerEvents = 'none';
+                btn.classList.add('disabled');
+            });
+
+            // Save answer
+            quizState.answers.push({ q: q, selected: selectedIndices, correct: q.correct });
+
+            const correctSet = new Set(q.correct);
+            const selectedSet = new Set(selectedIndices);
+            const isCorrect = (selectedSet.size === correctSet.size) && [...selectedSet].every(val => correctSet.has(val));
+
+            Array.from(container.children).forEach((btn, idx) => {
+                if (correctSet.has(idx)) btn.classList.add('correct');
+                else if (selectedSet.has(idx)) btn.classList.add('wrong');
+            });
+
+            const feedback = document.getElementById('quiz-feedback');
+             if (isCorrect) {
+                quizState.score += 10;
+                feedback.innerHTML = `<strong style="color:#2ecc71">Correto!</strong><br><small>${q.explanation}</small>`;
+                feedback.style.border = '1px solid #2ecc71';
+                feedback.style.background = 'rgba(46, 204, 113, 0.2)';
+            } else {
+                feedback.innerHTML = `<strong style="color:#e74c3c">Incorreto ou Incompleto.</strong><br><small>${q.explanation}</small>`;
+                feedback.style.border = '1px solid #e74c3c';
+                feedback.style.background = 'rgba(231, 76, 60, 0.2)';
+            }
+
+            document.getElementById('btn-quiz-confirm').style.display = 'none';
+            feedback.style.display = 'block';
+            document.getElementById('btn-quiz-next').style.display = 'inline-block';
+        }
+
         function nextQuestion() {
             quizState.currentQ++;
             if (quizState.currentQ < quizState.activeQuestions.length) { renderQuestion(); } else { showResults(); }
@@ -2107,10 +2198,17 @@
             document.getElementById('quiz-result-screen').style.display = 'block';
             const maxScore = quizState.activeQuestions.length * 10;
             const percentage = (quizState.score / maxScore) * 100;
-            let rank = percentage === 100 ? "Historiador Real" : (percentage >= 50 ? "Cavaleiro" : "Escudeiro");
+            let rank = "Aprendiz";
+            let msg = "";
+            if(percentage === 100) { rank = "Historiador Real"; msg = "Perfeito! Conhece a história como um Rei."; }
+            else if(percentage >= 80) { rank = "Mestre de Avis"; msg = "Excelente desempenho!"; }
+            else if(percentage >= 50) { rank = "Cavaleiro"; msg = "Bom trabalho, mas ainda há muito a descobrir."; }
+            else { rank = "Escudeiro"; msg = "Precisa de estudar mais o Guia."; }
+
             document.getElementById('cert-user-name').textContent = quizState.user;
             document.getElementById('cert-score-val').textContent = `${quizState.score} / ${maxScore}`;
             document.getElementById('cert-rank').textContent = `Grau: ${rank}`;
+            document.getElementById('quiz-final-msg').textContent = msg;
         }
 
         function showReviewScreen() {
@@ -2119,10 +2217,26 @@
             const list = document.getElementById('review-list');
             list.innerHTML = '';
             quizState.answers.forEach((item, index) => {
-                const isRight = (item.selected === item.correct);
+                let isRight = false;
+                let ansText = "";
+                
+                if(item.q.type === 'multi') {
+                    const sSet = new Set(item.selected);
+                    const cSet = new Set(item.correct);
+                    isRight = (sSet.size === cSet.size) && [...sSet].every(v => cSet.has(v));
+                    const myAns = item.selected.map(i => item.q.options[i]).join(", ");
+                    const corrAns = item.correct.map(i => item.q.options[i]).join(", ");
+                    ansText = `<div>Sua resposta: <strong>${myAns || "(Nenhuma)"}</strong></div>
+                               ${!isRight ? `<div style="color:#2ecc71">Correta: <strong>${corrAns}</strong></div>` : ''}`;
+                } else {
+                    isRight = (item.selected === item.correct);
+                    ansText = `<div>Sua resposta: <strong>${item.q.options[item.selected]}</strong></div>
+                               ${!isRight ? `<div style="color:#2ecc71">Correta: <strong>${item.q.options[item.correct]}</strong></div>` : ''}`;
+                }
+
                 const div = document.createElement('div');
                 div.className = `review-item ${isRight ? 'correct' : 'wrong'}`;
-                div.innerHTML = `<div class="review-q">${index + 1}. ${item.q.q}</div><div class="review-ans">Sua resposta: <strong>${item.q.options[item.selected]}</strong></div><div class="review-explanation">${item.q.explanation}</div>`;
+                div.innerHTML = `<div class="review-q">${index + 1}. ${item.q.q}</div><div class="review-ans">${ansText}</div><div class="review-explanation">${item.q.explanation}</div>`;
                 list.appendChild(div);
             });
         }
