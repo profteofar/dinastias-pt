@@ -66,8 +66,9 @@
             color: #000; 
             box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
         }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255, 215, 0, 0.5); }
-        .btn-primary:active { transform: translateY(0); }
+        .btn-primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255, 215, 0, 0.5); }
+        .btn-primary:active:not(:disabled) { transform: translateY(0); }
+        .btn-primary:disabled { background: #555; color: #888; cursor: not-allowed; box-shadow: none; }
 
         .btn-outline { background: transparent; border: 2px solid var(--gold); color: var(--gold); }
         .btn-outline:hover { background: var(--gold); color: #000; }
@@ -224,9 +225,27 @@
         .album-header {
             display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;
             background: rgba(0,0,0,0.5); padding: 15px 25px; border-radius: 12px; border: 1px solid var(--glass-border);
+            flex-wrap: wrap; gap: 10px;
         }
-        .album-stats { font-family: 'Cinzel', serif; color: var(--gold); font-size: 1.1rem; }
+        .album-stats-container { display: flex; gap: 20px; align-items: center; }
+        .album-stats { font-family: 'Cinzel', serif; color: var(--gold); font-size: 1.1rem; display: flex; align-items: center; gap: 8px; }
         
+        .score-badge {
+            background: rgba(46, 204, 113, 0.2); border: 1px solid var(--success);
+            padding: 5px 15px; border-radius: 20px; font-size: 0.9rem; color: var(--success);
+            display: flex; align-items: center; gap: 8px; font-weight: bold;
+        }
+        .coin-badge {
+            background: rgba(255, 215, 0, 0.15); border: 1px solid var(--gold);
+            padding: 5px 15px; border-radius: 20px; font-size: 0.9rem; color: var(--gold);
+            display: flex; align-items: center; gap: 8px; font-weight: bold;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
+        }
+        .level-badge {
+            background: rgba(255, 255, 255, 0.1); border: 1px solid #aaa;
+            padding: 5px 15px; border-radius: 20px; font-size: 0.9rem; color: #ddd;
+        }
+
         .sticker-grid {
             display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px;
             margin-bottom: 40px;
@@ -271,11 +290,23 @@
         .sticker-info h4 { font-size: 0.9rem; margin: 0; color: #fff; text-shadow: 1px 1px 2px #000; }
         .sticker-info span { font-size: 0.7rem; color: var(--gold); }
 
+        /* XP Popup Animation */
+        @keyframes floatUp {
+            0% { transform: translate(-50%, 0); opacity: 1; }
+            100% { transform: translate(-50%, -50px); opacity: 0; }
+        }
+        .xp-popup {
+            position: absolute; top: 40%; left: 50%; transform: translateX(-50%);
+            color: var(--gold); font-weight: bold; font-size: 1.5rem;
+            text-shadow: 0 0 5px #000; pointer-events: none; z-index: 50;
+            animation: floatUp 1.5s forwards ease-out;
+        }
+
         @keyframes stickerPop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
         /* Inventory Bar (Sticky Bottom) */
         .inventory-bar {
-            position: fixed; bottom: 0; left: 0; width: 100%; height: 130px;
+            position: fixed; bottom: 0; left: 0; width: 100%; height: 140px;
             background: rgba(26, 26, 46, 0.95); border-top: 2px solid var(--gold);
             z-index: 900; display: flex; align-items: center; padding: 0 20px; gap: 20px;
             backdrop-filter: blur(10px); box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
@@ -287,6 +318,7 @@
         .pack-area {
             flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 5px;
             padding-right: 20px; border-right: 1px solid rgba(255,255,255,0.1);
+            min-width: 140px;
         }
         
         .inventory-slots {
@@ -304,7 +336,11 @@
         .inventory-item:hover { transform: translateY(-5px); border-color: var(--gold); }
         .inventory-item:active { cursor: grabbing; }
         .inventory-item img { width: 100%; height: 100%; object-fit: cover; }
-        .inventory-item.selected { border-color: var(--success); box-shadow: 0 0 10px var(--success); }
+        .inventory-item.duplicate { border-color: #e74c3c; opacity: 0.9; }
+        .inventory-item.duplicate::after {
+            content: 'REPETIDO'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg);
+            color: #e74c3c; font-weight: bold; font-size: 0.8rem; border: 2px solid #e74c3c; padding: 2px 5px; background: rgba(0,0,0,0.7);
+        }
 
         /* Pack Opening Animation */
         .pack-modal {
@@ -320,6 +356,10 @@
         }
         .new-card-reveal.revealed { transform: rotateY(0deg); }
         .new-card-reveal img { width: 100%; height: 100%; object-fit: cover; }
+        .new-card-reveal.is-duplicate::before {
+            content: 'JÁ TENS!'; position: absolute; bottom: 10px; left: 0; width: 100%; text-align: center;
+            background: #e74c3c; color: #fff; font-weight: bold; padding: 5px 0; z-index: 5;
+        }
         
         /* --- MODAL PRINCIPAL (FICHA) --- */
         .modal {
@@ -591,6 +631,8 @@
             .btn-infographic { margin-left: 0; margin-top: 15px; }
             .inventory-bar { height: 110px; padding: 0 10px; }
             .inventory-item { width: 60px; height: 80px; }
+            .album-header { flex-direction: column; align-items: flex-start; }
+            .album-stats-container { flex-direction: column; align-items: flex-start; gap: 10px; margin-top: 10px; }
         }
     </style>
 </head>
@@ -643,7 +685,7 @@
     <section id="view-album" class="view-section">
         <div style="text-align: center; margin-bottom: 30px;">
             <h2>Caderneta de Cromos Real</h2>
-            <p>Complete a coleção real! Abra pacotes e arraste os cromos para o lugar correto.</p>
+            <p>Complete a coleção real! Use as suas moedas para comprar pacotes e troque os repetidos.</p>
             <button onclick="resetAlbum()" class="btn btn-danger-outline" style="margin-top: 15px; font-size: 0.85rem;">
                 <i class="fas fa-trash-alt"></i> Reiniciar Coleção
             </button>
@@ -658,8 +700,17 @@
             
             <div class="album-header">
                 <h3 id="album-title" style="margin: 0;">Dinastia</h3>
-                <div class="album-stats">
-                    <i class="fas fa-images"></i> <span id="album-progress-text">0/0</span>
+                <div class="album-stats-container">
+                    <div class="coin-badge" title="Moedas Reais - Ganhe jogando!">
+                        <i class="fas fa-coins"></i> <span id="album-credits-text">250</span>
+                    </div>
+                    <div class="score-badge" title="Experiência acumulada">
+                        <i class="fas fa-star"></i> <span id="album-score-text">0 XP</span>
+                    </div>
+                    <div class="level-badge" id="album-level-text">Nível: Novato</div>
+                    <div class="album-stats">
+                        <i class="fas fa-images"></i> <span id="album-progress-text">0/0</span>
+                    </div>
                 </div>
             </div>
 
@@ -668,10 +719,10 @@
             <!-- Inventory Bar -->
             <div id="inventory-bar" class="inventory-bar hidden">
                 <div class="pack-area">
-                    <button class="btn btn-primary" onclick="openPack()" style="padding: 5px 15px; font-size: 0.9rem;">
-                        <i class="fas fa-box-open"></i> Abrir Pacote
+                    <button class="btn btn-primary" id="btn-buy-pack" onclick="openPack()" style="padding: 8px 15px; font-size: 0.9rem; flex-direction:column; gap:2px;">
+                        <span><i class="fas fa-shopping-cart"></i> Comprar Pacote</span>
+                        <span style="font-size:0.75rem; color:#000; font-weight:800;">50 Moedas</span>
                     </button>
-                    <small style="color: #aaa; font-size: 0.7rem;">3 Cromos Grátis</small>
                 </div>
                 <div style="width: 1px; height: 60%; background: rgba(255,255,255,0.1); margin: 0 10px;"></div>
                 <div class="inventory-slots" id="inventory-slots">
@@ -721,7 +772,7 @@
             <div style="text-align: center; margin-top: 40px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 30px;">
                 <p style="margin-bottom: 15px;">Sente-se preparado?</p>
                 <button class="btn btn-primary" onclick="goToDynastyGames()">
-                    <i class="fas fa-gamepad"></i> Praticar Jogos desta Dinastia
+                    <i class="fas fa-gamepad"></i> Ganhar Moedas nos Jogos
                 </button>
             </div>
             
@@ -814,13 +865,13 @@
         <div class="quiz-container">
             <div style="text-align: center; margin-bottom: 30px;">
                 <h2>Questionário Real</h2>
-                <p>Teste os seus conhecimentos sobre as quatro dinastias de Portugal.</p>
+                <p>Responda corretamente para ganhar Moedas para a sua coleção!</p>
             </div>
 
             <div id="quiz-start-screen" class="glass-panel" style="text-align: center; padding: 40px;">
                 <i class="fas fa-scroll fa-3x" style="color: var(--gold); margin-bottom: 20px;"></i>
                 <h3>Pronto para o desafio?</h3>
-                <p style="margin-bottom: 20px;">Responda a 20 questões e obtenha o seu Certificado de Historiador Real.</p>
+                <p style="margin-bottom: 20px;">Cada resposta certa vale <strong>15 Moedas</strong>.</p>
                 
                 <input type="text" id="quiz-username" placeholder="Escreva o seu nome..." style="padding: 12px; border-radius: 8px; border: 1px solid var(--gold); background: rgba(0,0,0,0.5); color: #fff; width: 80%; max-width: 300px; margin-bottom: 20px; font-family: 'Lato', sans-serif;">
                 <br>
@@ -859,11 +910,15 @@
                     <p id="cert-rank" style="font-style: italic; color: var(--gold);">Grau: Aprendiz</p>
                     <div style="margin-top: 20px; font-size: 0.8rem; opacity: 0.7;">Museu Real Virtual</div>
                 </div>
+                
+                <div style="margin: 20px 0; font-size: 1.2rem; color: var(--gold);">
+                    <i class="fas fa-coins"></i> Total Ganho: <span id="quiz-total-coins">0</span> Moedas
+                </div>
 
                 <div style="margin-top: 20px; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
                     <button class="btn btn-outline" onclick="restartQuiz()"><i class="fas fa-redo"></i> Tentar Novamente</button>
                     <button class="btn btn-primary" onclick="showReviewScreen()"><i class="fas fa-list-ul"></i> Rever Respostas</button>
-                    <button class="btn btn-outline" onclick="window.print()"><i class="fas fa-print"></i> Imprimir</button>
+                    <button class="btn btn-outline" onclick="router('album')"><i class="fas fa-shopping-cart"></i> Ir para a Caderneta</button>
                 </div>
             </div>
 
@@ -880,7 +935,7 @@
     <section id="view-timeline" class="view-section">
         <div style="text-align: center; margin-bottom: 30px;">
             <h2>Centro de Cronologia</h2>
-            <p>Descubra a linha do tempo ou desafie o seu conhecimento.</p>
+            <p>Descubra a linha do tempo ou ganhe moedas desafiando o seu conhecimento.</p>
             <div id="timeline-filter-info" style="display:none; color:var(--gold); margin-top:10px;">
                 <i class="fas fa-filter"></i> A jogar com: <span id="timeline-current-filter"></span>
                 <button onclick="clearTimelineFilter()" style="background:none; border:none; color:#fff; cursor:pointer; margin-left:10px; text-decoration:underline;">(Limpar Filtro)</button>
@@ -888,8 +943,8 @@
         </div>
         <div class="glass-panel" style="display: flex; justify-content: center; gap: 15px; margin-bottom: 30px; flex-wrap: wrap;">
             <button class="btn btn-primary" onclick="switchTimelineMode('view')"><i class="fas fa-eye"></i> Explorar Linha</button>
-            <button class="btn btn-outline" onclick="switchTimelineMode('order')"><i class="fas fa-sort-numeric-down"></i> Ordenar Reis</button>
-            <button class="btn btn-outline" onclick="switchTimelineMode('match')"><i class="fas fa-link"></i> Correspondência</button>
+            <button class="btn btn-outline" onclick="switchTimelineMode('order')"><i class="fas fa-sort-numeric-down"></i> Ordenar Reis (+20 <i class="fas fa-coins"></i>)</button>
+            <button class="btn btn-outline" onclick="switchTimelineMode('match')"><i class="fas fa-link"></i> Correspondência (+15 <i class="fas fa-coins"></i>)</button>
         </div>
         <div id="timeline-mode-view" class="timeline-mode">
             <div class="glass-panel" style="padding: 10px;">
@@ -899,21 +954,23 @@
         <div id="timeline-mode-order" class="timeline-mode" style="display: none; text-align: center;">
             <div class="glass-panel">
                 <h3>Ordene a História</h3>
+                <p style="font-size:0.9rem; color:#aaa; margin-bottom:10px;">Coloque os reis na ordem cronológica correta.</p>
                 <div id="order-game-board" class="order-container"></div>
                 <div id="order-feedback" style="margin: 15px 0; font-weight: bold; min-height: 24px;"></div>
-                <button class="btn btn-primary" onclick="checkOrderGame()">Verificar</button>
+                <button class="btn btn-primary" onclick="checkOrderGame()">Verificar Ordem</button>
                 <button class="btn btn-outline" onclick="initOrderGame()"><i class="fas fa-redo"></i> Novo Jogo</button>
             </div>
         </div>
         <div id="timeline-mode-match" class="timeline-mode" style="display: none; text-align: center;">
             <div class="glass-panel">
                 <h3>Quem é Quem?</h3>
+                <p style="font-size:0.9rem; color:#aaa; margin-bottom:10px;">Associe o rei ao seu cognome, dinastia ou facto histórico.</p>
                 <div id="match-game-board" class="match-grid">
                     <div id="match-col-left" style="display:flex; flex-direction:column; gap:15px;"></div>
                     <div id="match-col-right" style="display:flex; flex-direction:column; gap:15px;"></div>
                 </div>
                 <div id="match-feedback" style="margin: 15px 0; font-weight: bold; min-height: 24px;"></div>
-                <button class="btn btn-outline" onclick="initMatchGame()"><i class="fas fa-redo"></i> Reiniciar</button>
+                <button class="btn btn-outline" onclick="initMatchGame()"><i class="fas fa-redo"></i> Reiniciar Tabuleiro</button>
             </div>
         </div>
     </section>
@@ -935,7 +992,7 @@
                     </div>
                 </div>
                 <div id="game-controls">
-                    <p style="margin-bottom: 20px;">Responde corretamente para ganhar influência e obter a chave.</p>
+                    <p style="margin-bottom: 20px;">Responde corretamente para ganhar influência e moedas (+15 <i class="fas fa-coins"></i>).</p>
                     <button class="btn btn-primary" onclick="exploreRoom()" style="font-size: 1.2rem;"><i class="fas fa-search"></i> INVESTIGAR SALA</button>
                 </div>
                 <div id="game-question" style="display: none; text-align: left; margin-top: 20px;">
@@ -1683,24 +1740,47 @@
 
         // --- STICKER ALBUM (CADERNETA) LOGIC ---
         let albumState = {
-            collected: [], // Array of IDs ('0-1', '0-2') user has but hasn't pasted
-            pasted: []     // Array of IDs user has pasted
+            collected: [], // Array of IDs ('0-1', '0-2') user has (includes duplicates)
+            pasted: [],     // Array of IDs user has pasted
+            score: 0,       // XP
+            credits: 200    // Moedas (Início: 200)
         };
+        
+        const PACK_COST = 50;
+        const SELL_PRICE = 10;
         let currentAlbumDynasty = null;
 
         function loadAlbumState() {
-            const saved = localStorage.getItem('ptKingsAlbumState');
+            const saved = localStorage.getItem('ptKingsAlbumState_v2'); // New key for updated version
             if (saved) {
                 albumState = JSON.parse(saved);
+                if(typeof albumState.credits === 'undefined') albumState.credits = 200; // Migration
             }
         }
 
         function saveAlbumState() {
-            localStorage.setItem('ptKingsAlbumState', JSON.stringify(albumState));
+            localStorage.setItem('ptKingsAlbumState_v2', JSON.stringify(albumState));
+        }
+
+        function updateAlbumStatsUI() {
+            document.getElementById('album-score-text').textContent = `${albumState.score} XP`;
+            document.getElementById('album-credits-text').textContent = albumState.credits;
+            
+            const buyBtn = document.getElementById('btn-buy-pack');
+            if(buyBtn) buyBtn.disabled = albumState.credits < PACK_COST;
+
+            let level = "Novato";
+            if (albumState.score >= 3000) level = "Mestre Curador";
+            else if (albumState.score >= 1500) level = "Entusiasta";
+            else if (albumState.score >= 500) level = "Amador";
+            
+            document.getElementById('album-level-text').textContent = `Nível: ${level}`;
         }
 
         function initAlbum() {
             loadAlbumState();
+            updateAlbumStatsUI();
+            
             const container = document.getElementById('album-dynasty-selector');
             if (container.children.length === 0) {
                 db.forEach(d => {
@@ -1738,6 +1818,7 @@
 
             renderAlbumGrid();
             renderInventory();
+            updateAlbumStatsUI();
         }
 
         function renderAlbumGrid() {
@@ -1760,7 +1841,6 @@
                 slot.ondragleave = (e) => { slot.classList.remove('drag-hover'); };
                 slot.ondrop = (e) => dropSticker(e, slot);
                 
-                // Touch/Click fallback logic could go here, but focusing on Drag for now
                 slot.onclick = () => { if(isPasted) openModal(allKings.find(x => x.id === uniqueId)); };
 
                 if (isPasted) {
@@ -1791,28 +1871,107 @@
             const container = document.getElementById('inventory-slots');
             container.innerHTML = '';
             
-            const myStickers = albumState.collected.filter(id => !albumState.pasted.includes(id));
+            // Logic to check what we have in inventory (Collected but NOT pasted OR Duplicate)
+            // We need to count occurrences
+            const inventoryCounts = {};
+            albumState.collected.forEach(id => {
+                inventoryCounts[id] = (inventoryCounts[id] || 0) + 1;
+            });
             
-            if (myStickers.length === 0) {
+            // Adjust for pasted items (remove 1 from count if pasted)
+            albumState.pasted.forEach(id => {
+                if(inventoryCounts[id]) inventoryCounts[id]--;
+            });
+
+            const inventoryIds = Object.keys(inventoryCounts).filter(id => inventoryCounts[id] > 0);
+            
+            if (inventoryIds.length === 0) {
                 container.innerHTML = '<div style="color: #666; font-size: 0.9rem; align-self: center;">Sem cromos novos...</div>';
                 return;
             }
 
-            myStickers.forEach(id => {
+            inventoryIds.forEach(id => {
+                const count = inventoryCounts[id];
+                if(count <= 0) return;
+
                 const k = allKings.find(x => x.id === id);
                 if (!k) return;
 
-                const item = document.createElement('div');
-                item.className = 'inventory-item';
-                item.draggable = true;
-                item.ondragstart = (e) => {
-                    e.dataTransfer.setData("text/plain", id);
-                    item.classList.add('dragging');
-                };
-                
-                item.innerHTML = `<img src="${k.img}" alt="${k.name}">`;
-                container.appendChild(item);
+                // Create items based on count
+                for(let i = 0; i < count; i++) {
+                     // Check if this specific item is a duplicate (i.e., we already have it pasted)
+                     // If it's in inventoryCounts, it means it's available.
+                     // Is it a duplicate of something ALREADY pasted?
+                     const isDuplicateOfPasted = albumState.pasted.includes(id);
+                     // Or is it a second copy in inventory? Handled by the loop, but logic is tricky.
+                     // Simple rule: If pasted.includes(id) -> It's a duplicate to sell.
+                     // If NOT pasted.includes(id) -> The FIRST one is to drag, the rest are duplicates.
+                     
+                     let type = 'normal';
+                     if (isDuplicateOfPasted) {
+                         type = 'duplicate';
+                     } else if (i > 0) {
+                         type = 'duplicate'; // Extra copies in inventory
+                     }
+
+                    const item = document.createElement('div');
+                    item.className = `inventory-item ${type}`;
+                    item.draggable = true;
+                    item.ondragstart = (e) => {
+                        e.dataTransfer.setData("text/plain", id);
+                        item.classList.add('dragging');
+                    };
+                    
+                    // Interaction for duplicates
+                    if(type === 'duplicate') {
+                        item.title = "Cromo Repetido - Clique para vender";
+                        item.onclick = () => sellDuplicate(id);
+                        item.style.cursor = "pointer";
+                    }
+
+                    item.innerHTML = `<img src="${k.img}" alt="${k.name}">`;
+                    container.appendChild(item);
+                }
             });
+        }
+        
+        function sellDuplicate(id) {
+            if(confirm(`Vender cromo repetido por ${SELL_PRICE} moedas?`)) {
+                // Remove one instance of this ID from collected
+                const idx = albumState.collected.indexOf(id);
+                if (idx > -1) {
+                    albumState.collected.splice(idx, 1);
+                    albumState.credits += SELL_PRICE;
+                    saveAlbumState();
+                    renderInventory();
+                    updateAlbumStatsUI();
+                    alert(`Vendido! +${SELL_PRICE} Moedas.`);
+                }
+            }
+        }
+
+        function showXpPopup(element, text) {
+            const popup = document.createElement('div');
+            popup.className = 'xp-popup';
+            popup.innerHTML = text;
+            element.appendChild(popup);
+            setTimeout(() => popup.remove(), 1500);
+        }
+
+        function checkDynastyCompletion(dynastyId) {
+            const dyn = db[dynastyId];
+            const allDynastyIds = dyn.kings.map((_, idx) => `${dynastyId}-${idx}`);
+            const isComplete = allDynastyIds.every(id => albumState.pasted.includes(id));
+            
+            if (isComplete) {
+                setTimeout(() => {
+                    alert(`Parabéns! Completou a coleção da ${dyn.name}!\nBónus: +500 XP e +200 Moedas!`);
+                    albumState.score += 500;
+                    albumState.credits += 200;
+                    saveAlbumState();
+                    updateAlbumStatsUI();
+                }, 500);
+            }
         }
 
         function dropSticker(e, slot) {
@@ -1825,16 +1984,27 @@
             if (draggedId === targetId) {
                 // Success!
                 albumState.pasted.push(targetId);
-                // Optionally remove from collected list or keep it (keeping allows dupes logic later, but for now we filter in render)
+                
+                // --- SCORE UPDATE ---
+                const xpGain = 50;
+                albumState.score += xpGain;
                 
                 saveAlbumState();
                 renderAlbumGrid();
                 renderInventory();
+                updateAlbumStatsUI();
                 
-                // Simple feedback effect
+                // Animations
                 slot.style.animation = 'none';
                 slot.offsetHeight; /* trigger reflow */
                 slot.style.animation = 'stickerPop 0.5s';
+                
+                // Show XP Popup on the slot
+                const filledSlot = document.querySelector(`.sticker-slot[data-id="${targetId}"]`);
+                if(filledSlot) showXpPopup(filledSlot, `+${xpGain} XP`);
+
+                checkDynastyCompletion(currentAlbumDynasty);
+
             } else {
                 // Wrong slot feedback
                 slot.style.borderColor = '#e74c3c';
@@ -1843,8 +2013,15 @@
         }
 
         function openPack() {
-            // Logic: Get 3 random kings from CURRENT dynasty (or global? Prompt says dynasty)
-            // Let's do current dynasty to help completion.
+            if (albumState.credits < PACK_COST) {
+                alert("Não tem moedas suficientes! Jogue o Quiz ou a Cronologia para ganhar mais.");
+                return;
+            }
+            
+            albumState.credits -= PACK_COST;
+            
+            // Logic: Get 3 random kings from CURRENT dynasty
+            // "Luck" factor: Just random. Can be duplicates.
             const dynKings = allKings.filter(k => k.dynastyId === currentAlbumDynasty);
             
             const newCards = [];
@@ -1852,15 +2029,11 @@
                 const r = Math.floor(Math.random() * dynKings.length);
                 const k = dynKings[r];
                 newCards.push(k);
-                
-                // Add to collection if not already fully pasted? 
-                // Let's allow duplicates in 'collected' but UI filters pasted ones out of inventory.
-                if (!albumState.collected.includes(k.id) && !albumState.pasted.includes(k.id)) {
-                     albumState.collected.push(k.id);
-                }
+                albumState.collected.push(k.id);
             }
             saveAlbumState();
-            renderInventory(); // Update background
+            renderInventory(); // Update background inventory immediately
+            updateAlbumStatsUI(); // Update coins
             
             // Show Animation
             const modal = document.getElementById('pack-opening-modal');
@@ -1872,6 +2045,13 @@
             newCards.forEach((k, idx) => {
                 const card = document.createElement('div');
                 card.className = 'new-card-reveal';
+                
+                // Check if it's a duplicate (we have more than 1 in collected OR we have it pasted)
+                // Since we just added it to collected, count must be > 1 OR pasted includes it.
+                // Simple visual check for animation:
+                const isDup = albumState.pasted.includes(k.id) || albumState.collected.filter(id => id === k.id).length > 1;
+                if(isDup) card.classList.add('is-duplicate');
+
                 card.innerHTML = `<img src="${k.img}">`;
                 container.appendChild(card);
                 
@@ -1885,24 +2065,22 @@
             document.getElementById('pack-opening-modal').style.display = 'none';
         }
 
-        // --- FUNCIONALIDADE ADICIONADA: REINICIAR CADERNETA ---
         function resetAlbum() {
-            if(confirm("Tem a certeza que deseja apagar todo o progresso da Caderneta? Esta ação não pode ser desfeita.")) {
-                albumState = { collected: [], pasted: [] };
+            if(confirm("Tem a certeza que deseja apagar todo o progresso da Caderneta e reiniciar o seu saldo? Esta ação não pode ser desfeita.")) {
+                albumState = { collected: [], pasted: [], score: 0, credits: 200 };
                 saveAlbumState();
                 
                 // Se estiver dentro de uma dinastia específica, atualiza a visualização
                 if(document.getElementById('album-area').style.display !== 'none') {
                     renderAlbumGrid();
                     renderInventory();
+                    updateAlbumStatsUI();
                 }
-                
-                // Feedback visual simples
-                alert("A sua caderneta foi reiniciada. Boa sorte na nova coleção!");
+                alert("A sua caderneta foi reiniciada. Começa com 200 Moedas. Boa sorte!");
             }
         }
 
-        // --- MODAL ---
+        // --- MODAL & TABS (Mantido igual) ---
         let currentInfographicUrl = "";
         let currentKingIndex = 0;
 
@@ -2089,14 +2267,18 @@
             { id: 30, type: 'tf', q: "D. Manuel II foi o último rei de Portugal.", options: ["Verdadeiro", "Falso"], correct: 0, explanation: "Verdadeiro. Foi deposto pela Implantação da República em 1910." }
         ];
 
-        let quizState = { currentQ: 0, score: 0, user: "", answers: [], activeQuestions: [] };
+        let quizState = { currentQ: 0, score: 0, user: "", answers: [], activeQuestions: [], sessionCoins: 0 };
+        const COINS_PER_ANSWER = 15;
 
         function startQuiz() {
             const nameInput = document.getElementById('quiz-username').value;
             if(!nameInput.trim()) { alert("Por favor, introduza o seu nome."); return; }
             const shuffled = [...quizData].sort(() => 0.5 - Math.random());
-            const selectedQuestions = shuffled.slice(0, 20); // Restore to 20 questions
-            quizState = { currentQ: 0, score: 0, user: nameInput, answers: [], activeQuestions: selectedQuestions };
+            const selectedQuestions = shuffled.slice(0, 20);
+            
+            loadAlbumState(); // Ensure we have latest credits
+            
+            quizState = { currentQ: 0, score: 0, user: nameInput, answers: [], activeQuestions: selectedQuestions, sessionCoins: 0 };
             document.getElementById('quiz-start-screen').style.display = 'none';
             document.getElementById('quiz-result-screen').style.display = 'none';
             document.getElementById('quiz-review-screen').style.display = 'none';
@@ -2163,7 +2345,12 @@
 
             if (isCorrect) {
                 quizState.score += 10;
-                feedback.innerHTML = `<strong style="color:#2ecc71">Correto!</strong><br><small>${q.explanation}</small>`;
+                // Add Coins
+                quizState.sessionCoins += COINS_PER_ANSWER;
+                albumState.credits += COINS_PER_ANSWER;
+                saveAlbumState();
+                
+                feedback.innerHTML = `<strong style="color:#2ecc71">Correto! +${COINS_PER_ANSWER} Moedas!</strong><br><small>${q.explanation}</small>`;
                 feedback.style.border = '1px solid #2ecc71';
                 feedback.style.background = 'rgba(46, 204, 113, 0.2)';
             } else {
@@ -2201,7 +2388,11 @@
             const feedback = document.getElementById('quiz-feedback');
              if (isCorrect) {
                 quizState.score += 10;
-                feedback.innerHTML = `<strong style="color:#2ecc71">Correto!</strong><br><small>${q.explanation}</small>`;
+                quizState.sessionCoins += COINS_PER_ANSWER;
+                albumState.credits += COINS_PER_ANSWER;
+                saveAlbumState();
+                
+                feedback.innerHTML = `<strong style="color:#2ecc71">Correto! +${COINS_PER_ANSWER} Moedas!</strong><br><small>${q.explanation}</small>`;
                 feedback.style.border = '1px solid #2ecc71';
                 feedback.style.background = 'rgba(46, 204, 113, 0.2)';
             } else {
@@ -2236,6 +2427,8 @@
             document.getElementById('cert-score-val').textContent = `${quizState.score} / ${maxScore}`;
             document.getElementById('cert-rank').textContent = `Grau: ${rank}`;
             document.getElementById('quiz-final-msg').textContent = msg;
+            
+            document.getElementById('quiz-total-coins').textContent = quizState.sessionCoins;
         }
 
         function showReviewScreen() {
@@ -2323,7 +2516,17 @@
                 board.appendChild(card);
             });
         }
-        function checkOrderGame() { const fb = document.getElementById('order-feedback'); if(isSorted(currentOrderKings)) { fb.innerHTML = "<i class='fas fa-check'></i> Correto!"; fb.style.color="#2ecc71"; } else { fb.innerHTML = "Errado."; fb.style.color="#e74c3c"; } }
+        function checkOrderGame() { 
+            const fb = document.getElementById('order-feedback'); 
+            if(isSorted(currentOrderKings)) { 
+                fb.innerHTML = "<i class='fas fa-check'></i> Correto! (+20 Moedas)"; fb.style.color="#2ecc71"; 
+                loadAlbumState();
+                albumState.credits += 20;
+                saveAlbumState();
+            } else { 
+                fb.innerHTML = "Ainda não está correto."; fb.style.color="#e74c3c"; 
+            } 
+        }
 
         let matchGame = { left: null, found: 0, pairs: [] };
         function initMatchGame() {
@@ -2347,7 +2550,13 @@
                 c.onclick=()=> {
                     if(c.classList.contains('matched') || !matchGame.left) return;
                     let match = (p.type==='e' && matchGame.left.id===p.val) || (p.type==='d' && String(matchGame.left.dId)===String(p.val));
-                    if(match) { matchGame.left.el.classList.add('matched'); c.classList.add('matched'); matchGame.left=null; document.getElementById('match-feedback').textContent="Correto!"; }
+                    if(match) { 
+                        matchGame.left.el.classList.add('matched'); c.classList.add('matched'); matchGame.left=null; 
+                        document.getElementById('match-feedback').textContent="Correto! (+15 Moedas)";
+                        loadAlbumState();
+                        albumState.credits += 15;
+                        saveAlbumState();
+                    }
                     else { c.classList.add('error'); setTimeout(()=>c.classList.remove('error'),500); }
                 };
                 rc.appendChild(c);
@@ -2387,8 +2596,14 @@
         function checkEscapeAnswer(correct) {
             document.getElementById('game-question').style.display='none';
             const fb = document.getElementById('game-feedback-area'); fb.style.display='block';
-            if(correct) { roomScore+=10; fb.innerHTML="Correto! (+10)"; fb.style.background="#2ecc71"; }
-            else { roomScore-=5; fb.innerHTML="Errado! (-5)"; fb.style.background="#e74c3c"; }
+            if(correct) { 
+                roomScore+=10; 
+                fb.innerHTML="Correto! (+10 Influência, +15 Moedas)"; fb.style.background="#2ecc71";
+                loadAlbumState();
+                albumState.credits += 15;
+                saveAlbumState();
+            }
+            else { roomScore-=5; fb.innerHTML="Errado! (-5 Influência)"; fb.style.background="#e74c3c"; }
             if(roomScore<0) { alert("Game Over"); gameDynasty=0; initEscapeRoom(); } else updateRoomUI();
         }
         function advanceDynasty() { gameDynasty++; roomScore=0; document.getElementById('game-feedback-area').style.display='none'; updateRoomUI(); }
