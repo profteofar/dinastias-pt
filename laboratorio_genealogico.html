@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laboratório Visual Genealógico - A Coroa de Portugal</title>
+    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-dark: #0f0f1a;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --gold: #d4af37;
+            --gold-bright: #ffd700;
+            --text-light: #f0f0f0;
+            --accent: #8b0000;
+            --success: #2ecc71;
+            --error: #e74c3c;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Lato', sans-serif;
+            background-color: var(--bg-dark);
+            background-image: radial-gradient(circle at top, #1a1a2e 0%, #0f0f1a 100%);
+            color: var(--text-light);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* --- UI COMPONENTS --- */
+        h1, h2, h3 { font-family: 'Cinzel', serif; color: var(--gold); }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 30px 0;
+            border-bottom: 1px solid var(--glass-border);
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .btn-back-main {
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            background: transparent;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            padding: 8px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-family: 'Cinzel', serif;
+            font-size: 0.8rem;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+        .btn-back-main:hover {
+            background: var(--gold);
+            color: #000;
+        }
+
+        .header-logo {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        /* --- SELECTION AREA --- */
+        .control-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        select {
+            background: #222;
+            color: #fff;
+            border: 1px solid var(--gold);
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            cursor: pointer;
+            min-width: 250px;
+            transition: all 0.3s;
+        }
+        select:hover { border-color: var(--gold-bright); box-shadow: 0 0 10px rgba(212, 175, 55, 0.3); }
+
+        /* --- GENEALOGY TREE --- */
+        .lab-workspace {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+            align-items: center;
+            position: relative;
+        }
+
+        .tree-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 60px;
+            padding: 40px;
+            background: rgba(255,255,255,0.02);
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+            overflow-x: auto;
+            min-height: 400px;
+            position: relative;
+        }
+
+        .gen-row {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            position: relative;
+            flex-wrap: nowrap;
+        }
+
+        .gen-row::after {
+            content: '';
+            position: absolute;
+            bottom: -35px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            height: 30px;
+            background: var(--glass-border);
+            display: none;
+        }
+        .gen-row:not(:last-child)::after { display: block; }
+
+        .node {
+            width: 160px;
+            background: #1a1a2e;
+            border: 2px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 10px;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            z-index: 5;
+        }
+
+        .node:hover:not(.placeholder) {
+            transform: translateY(-5px) scale(1.05);
+            border-color: var(--gold);
+            box-shadow: 0 10px 25px rgba(212, 175, 55, 0.3);
+            background: #252545;
+        }
+
+        .node.active {
+            border-color: var(--gold-bright);
+            background: #252545;
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.4);
+            width: 180px;
+        }
+
+        .node.placeholder {
+            border: 3px dashed var(--gold);
+            background: rgba(212, 175, 55, 0.1);
+            cursor: default;
+        }
+        .node.placeholder.drag-over {
+            background: rgba(212, 175, 55, 0.3);
+            transform: scale(1.1);
+        }
+        .node.placeholder .placeholder-icon {
+            font-size: 2rem;
+            color: var(--gold);
+            margin-bottom: 10px;
+            opacity: 0.5;
+        }
+
+        .node img {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--glass-border);
+            margin-bottom: 10px;
+            transition: border-color 0.3s;
+        }
+        .node.active img { width: 90px; height: 90px; border-color: var(--gold-bright); }
+
+        .node-name {
+            font-weight: bold;
+            font-size: 0.9rem;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .node-role {
+            font-size: 0.7rem;
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-family: 'Cinzel', serif;
+        }
+
+        .node-empty {
+            width: 160px;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px dashed rgba(255,255,255,0.1);
+            border-radius: 12px;
+            color: #555;
+            font-size: 0.8rem;
+            font-style: italic;
+        }
+
+        /* --- CHALLENGE SECTION --- */
+        .challenge-section {
+            width: 100%;
+            max-width: 900px;
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(15, 15, 26, 0.8) 100%);
+            border: 1px solid var(--gold);
+            border-radius: 20px;
+            padding: 30px;
+            margin-top: 20px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+            display: none;
+            animation: slideIn 0.5s ease;
+            position: relative;
+        }
+
+        /* Layout lateral para o desafio */
+        .challenge-layout {
+            display: grid;
+            grid-template-columns: 1fr 280px;
+            gap: 30px;
+            align-items: start;
+        }
+
+        @keyframes slideIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+        .challenge-title { font-size: 1.5rem; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+        .challenge-text { font-size: 1.1rem; line-height: 1.5; margin-bottom: 20px; }
+
+        .option-column {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background: rgba(0,0,0,0.3);
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .btn-option {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--glass-border);
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: 'Lato', sans-serif;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            user-select: none;
+            text-align: center;
+        }
+        .btn-option:hover { background: rgba(212, 175, 55, 0.15); border-color: var(--gold); transform: translateX(-5px); }
+        .btn-option.correct { background: var(--success) !important; border-color: #27ae60 !important; color: #000; font-weight: bold; }
+        .btn-option.wrong { background: var(--error) !important; border-color: #c0392b !important; }
+        
+        .btn-option[draggable="true"] {
+            cursor: grab;
+            border-style: dashed;
+        }
+        .btn-option[draggable="true"]:active {
+            cursor: grabbing;
+        }
+
+        .reward-popup {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--gold);
+            color: #000;
+            padding: 15px 25px;
+            border-radius: 50px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            animation: popOut 0.5s forwards, fadeOut 0.5s 2.5s forwards;
+            z-index: 1000;
+        }
+
+        @keyframes popOut { 0% { transform: scale(0); } 100% { transform: scale(1); } }
+        @keyframes fadeOut { 100% { opacity: 0; transform: translateX(50px); } }
+
+        /* --- WALLET --- */
+        .wallet {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #1a1a2e;
+            border: 2px solid var(--gold);
+            padding: 15px 25px;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-family: 'Cinzel', serif;
+            z-index: 100;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        /* --- MODAL --- */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .modal-content {
+            background: #1a1a1a;
+            border: 1px solid var(--gold);
+            border-radius: 15px;
+            width: 100%;
+            max-width: 600px;
+            padding: 30px;
+            position: relative;
+        }
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #aaa;
+        }
+
+        @media (max-width: 992px) {
+            .challenge-layout { grid-template-columns: 1fr; }
+            .option-column { flex-direction: row; flex-wrap: wrap; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <button onclick="handleBackAction()" class="btn-back-main" id="btn-back">
+                <i class="fas fa-arrow-left"></i> Voltar à Aplicação
+            </button>
+            <div class="header-logo">
+                <i class="fas fa-sitemap"></i>
+                <h1>Laboratório Visual Genealógico</h1>
+            </div>
+            <p>Explore as linhagens e as relações familiares dos reis portugueses.</p>
+        </header>
+
+        <section class="control-panel">
+            <select id="dynasty-select" onchange="populateKings()">
+                <option value="">Selecione uma Dinastia</option>
+            </select>
+            <select id="king-select" onchange="loadTree()">
+                <option value="">Selecione um Monarca</option>
+            </select>
+        </section>
+
+        <main class="lab-workspace">
+            <div id="tree-display" class="tree-container">
+                <div style="text-align: center; color: #555; width: 100%; padding: 100px 0;">
+                    <i class="fas fa-crown fa-3x" style="margin-bottom: 20px; opacity: 0.2;"></i>
+                    <p>Selecione um monarca acima para começar a exploração.</p>
+                </div>
+            </div>
+
+            <div id="challenge-box" class="challenge-section">
+                <div class="challenge-layout">
+                    <div class="challenge-info">
+                        <div class="challenge-title">
+                            <i id="challenge-icon" class="fas fa-scroll"></i>
+                            <h3 id="challenge-header">Desafio de Linhagem</h3>
+                        </div>
+                        <p id="challenge-question" class="challenge-text">Qual era a relação de parentesco...</p>
+                        <div id="challenge-feedback" style="margin-top: 20px; font-weight: bold; min-height: 24px;"></div>
+                    </div>
+                    <div id="challenge-options" class="option-column">
+                        <!-- Opções geradas dinamicamente -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div class="wallet">
+        <i class="fas fa-coins" style="color: var(--gold-bright);"></i>
+        <span id="coin-count">250</span>
+        <span style="font-size: 0.8rem; color: #888;">Moedas</span>
+    </div>
+
+    <div id="king-modal" class="modal" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <div id="modal-body" style="text-align: center;">
+                <img id="m-img" src="" style="width: 120px; height: 120px; border-radius: 50%; border: 3px solid var(--gold); margin-bottom: 20px; object-fit: cover;">
+                <h2 id="m-name"></h2>
+                <p id="m-cognome" style="color: var(--gold); font-style: italic; margin-bottom: 15px;"></p>
+                <div id="m-details" style="text-align: left; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- BASE DE DADOS ---
+        const database = [
+            {
+                id: 0, name: "1ª Dinastia: Borgonha", color: "#8b0000",
+                kings: [
+                    { name: "D. Afonso Henriques", cognome: "O Conquistador", dates: "1143-1185", filiation: "D. Henrique de Borgonha e D. Teresa", img: "./dafonsohenriques.jpg" },
+                    { name: "D. Sancho I", cognome: "O Povoador", dates: "1185-1211", filiation: "D. Afonso Henriques e D. Mafalda de Sabóia", img: "./dsanchoI.jpg" },
+                    { name: "D. Afonso II", cognome: "O Gordo", dates: "1211-1223", filiation: "D. Sancho I e D. Dulce de Aragão", img: "./dafonsoII.jpg" },
+                    { name: "D. Sancho II", cognome: "O Capelo", dates: "1223-1248", filiation: "D. Afonso II e D. Urraca de Castela", img: "./dsanchoII.jpg" },
+                    { name: "D. Afonso III", cognome: "O Bolonhês", dates: "1248-1279", filiation: "D. Afonso II e D. Urraca de Castela", img: "./dafonsoIII.jpg" },
+                    { name: "D. Dinis I", cognome: "O Lavrador", dates: "1279-1325", filiation: "D. Afonso III e D. Beatriz de Castela", img: "./ddinis.jpg" },
+                    { name: "D. Afonso IV", cognome: "O Bravo", dates: "1325-1357", filiation: "D. Dinis I e D. Isabel de Aragão", img: "./dafonsoIV.jpg" },
+                    { name: "D. Pedro I", cognome: "O Justiceiro", dates: "1357-1367", filiation: "D. Afonso IV e D. Beatriz de Castela", img: "./dpedroI.jpg" },
+                    { name: "D. Fernando I", cognome: "O Formoso", dates: "1367-1383", filiation: "D. Pedro I e D. Constança Manuel", img: "./dfernandoI.jpg" }
+                ]
+            },
+            {
+                id: 1, name: "2ª Dinastia: Avis", color: "#2e8b57",
+                kings: [
+                    { name: "D. João I", cognome: "O de Boa Memória", dates: "1385-1433", filiation: "D. Pedro I e Teresa Lourenço", img: "./djoaoI.jpg" },
+                    { name: "D. Duarte I", cognome: "O Eloquente", dates: "1433-1438", filiation: "D. João I e D. Filipa de Lencastre", img: "./dduarte.jpg" },
+                    { name: "D. Afonso V", cognome: "O Africano", dates: "1438-1481", filiation: "D. Duarte I e D. Leonor de Aragão", img: "./dafonsoV.jpg" },
+                    { name: "D. João II", cognome: "O Príncipe Perfeito", dates: "1481-1495", filiation: "D. Afonso V e D. Isabel de Coimbra", img: "./djoaoII.jpg" },
+                    { name: "D. Manuel I", cognome: "O Venturoso", dates: "1495-1521", filiation: "Infante D. Fernando e D. Beatriz", img: "./dmanuelI.jpg" },
+                    { name: "D. João III", cognome: "O Piedoso", dates: "1521-1557", filiation: "D. Manuel I e D. Maria de Aragão", img: "./djoaoIII.jpg" },
+                    { name: "D. Sebastião I", cognome: "O Desejado", dates: "1557-1578", filiation: "Príncipe João e D. Joana de Áustria", img: "./dsebastiao.jpg" },
+                    { name: "D. Henrique I", cognome: "O Casto", dates: "1578-1580", filiation: "D. Manuel I e D. Maria de Aragão", img: "./dhenrique.jpg" }
+                ]
+            },
+            {
+                id: 2, name: "3ª Dinastia: Filipina", color: "#daa520",
+                kings: [
+                    { name: "Filipe I", cognome: "O Prudente", dates: "1581-1598", filiation: "Carlos V e Isabel de Portugal", img: "./dfilipeI.jpg" },
+                    { name: "Filipe II", cognome: "O Pio", dates: "1598-1621", filiation: "Filipe I e Ana de Áustria", img: "./dfilipeII.jpg" },
+                    { name: "Filipe III", cognome: "O Grande", dates: "1621-1640", filiation: "Filipe II e Margarida de Áustria", img: "./dfilipeIII.jpg" }
+                ]
+            },
+            {
+                id: 3, name: "4ª Dinastia: Bragança", color: "#4169e1",
+                kings: [
+                    { name: "D. João IV", cognome: "O Restaurador", dates: "1640-1656", filiation: "D. Teodósio II de Bragança e D. Ana de Velasco", img: "./djoaoIV.jpg" },
+                    { name: "D. Afonso VI", cognome: "O Vitorioso", dates: "1656-1683", filiation: "D. João IV e D. Luísa de Gusmão", img: "./dafonsoVI.jpg" },
+                    { name: "D. Pedro II", cognome: "O Pacífico", dates: "1683-1706", filiation: "D. João IV e D. Luísa de Gusmão", img: "./dpedroII.jpg" },
+                    { name: "D. João V", cognome: "O Magnânimo", dates: "1706-1750", filiation: "D. Pedro II e D. Maria Sofia de Neuburgo", img: "./djoaoV.jpg" },
+                    { name: "D. José I", cognome: "O Reformador", dates: "1750-1777", filiation: "D. João V e D. Maria Ana de Áustria", img: "./djose.jpg" },
+                    { name: "D. Maria I", cognome: "A Piedosa", dates: "1777-1816", filiation: "D. José I e D. Mariana Vitória", img: "./dmaria.jpg" },
+                    { name: "D. João VI", cognome: "O Clemente", dates: "1816-1826", filiation: "D. Maria I e D. Pedro III", img: "./djoaoVI.jpg" },
+                    { name: "D. Pedro IV", cognome: "O Libertador", dates: "1826", filiation: "D. João VI e D. Carlota Joaquina", img: "./dpedroIV.jpg" },
+                    { name: "D. Maria II", cognome: "A Educadora", dates: "1834-1853", filiation: "D. Pedro IV e D. Maria Leopoldina", img: "./dmariaII.jpg" },
+                    { name: "D. Luís I", cognome: "O Popular", dates: "1861-1889", filiation: "D. Maria II e D. Fernando II", img: "./dluis.jpg" },
+                    { name: "D. Carlos I", cognome: "O Diplomata", dates: "1889-1908", filiation: "D. Luís I e D. Maria Pia de Sabóia", img: "./dcarlos.jpg" },
+                    { name: "D. Manuel II", cognome: "O Patriota", dates: "1908-1910", filiation: "D. Carlos I e D. Amélia de Orleães", img: "./dmanuelII.jpg" }
+                ]
+            }
+        ];
+
+        let allKingsFlat = [];
+        database.forEach(d => d.kings.forEach(k => allKingsFlat.push({...k, dynasty: d.name})));
+
+        // --- SISTEMA DE MOEDAS PERSISTENTE ---
+        const ALBUM_KEY = 'ptKingsAlbumState_v2';
+        let albumState = { collected: [], pasted: [], score: 0, credits: 250 };
+
+        function loadAlbumState() {
+            const saved = localStorage.getItem(ALBUM_KEY);
+            if (saved) {
+                albumState = JSON.parse(saved);
+            }
+            updateWallet();
+        }
+
+        function saveAlbumState() {
+            localStorage.setItem(ALBUM_KEY, JSON.stringify(albumState));
+        }
+
+        function addCoins(amount) {
+            albumState.credits += amount;
+            saveAlbumState();
+            updateWallet();
+            
+            const popup = document.createElement('div');
+            popup.className = 'reward-popup';
+            popup.innerHTML = `<i class="fas fa-plus"></i> ${amount} Moedas Reais`;
+            document.body.appendChild(popup);
+            setTimeout(() => popup.remove(), 3000);
+        }
+
+        function updateWallet() {
+            document.getElementById('coin-count').textContent = albumState.credits;
+        }
+
+        // --- INICIALIZAÇÃO ---
+        window.onload = function() {
+            loadAlbumState();
+            const dynSelect = document.getElementById('dynasty-select');
+            database.forEach(d => {
+                const opt = document.createElement('option');
+                opt.value = d.id;
+                opt.textContent = d.name;
+                dynSelect.appendChild(opt);
+            });
+
+            // Ajustar botão de voltar se estiver num novo separador
+            if (window.opener || window.history.length === 1) {
+                const btn = document.getElementById('btn-back');
+                btn.innerHTML = '<i class="fas fa-times"></i> Fechar Laboratório';
+            }
+        };
+
+        function handleBackAction() {
+            if (window.opener || window.history.length === 1) {
+                window.close();
+            } else {
+                window.location.href = 'index.html';
+            }
+        }
+
+        function populateKings() {
+            const dynId = document.getElementById('dynasty-select').value;
+            const kingSelect = document.getElementById('king-select');
+            kingSelect.innerHTML = '<option value="">Selecione um Monarca</option>';
+            if(dynId === "") return;
+            database[dynId].kings.forEach(k => {
+                const opt = document.createElement('option');
+                opt.value = k.name;
+                opt.textContent = k.name;
+                kingSelect.appendChild(opt);
+            });
+        }
+
+        function findKingByName(name) {
+            return allKingsFlat.find(k => k.name.includes(name) || name.includes(k.name));
+        }
+
+        // --- LÓGICA DA ÁRVORE ---
+        let currentChallenge = null;
+
+        function loadTree() {
+            const kingName = document.getElementById('king-select').value;
+            if(!kingName) return;
+
+            const target = allKingsFlat.find(k => k.name === kingName);
+            const display = document.getElementById('tree-display');
+            display.innerHTML = '';
+
+            const parentsArr = target.filiation.split(' e ').map(n => findKingByName(n.trim())).filter(Boolean);
+            const siblings = allKingsFlat.filter(k => k.filiation === target.filiation && k.name !== target.name);
+            const children = allKingsFlat.filter(k => k.filiation.includes(target.name.replace('D. ', '')));
+
+            let grandchildren = [];
+            children.forEach(child => {
+                const gc = allKingsFlat.filter(k => k.filiation.includes(child.name.replace('D. ', '')));
+                grandchildren = [...grandchildren, ...gc];
+            });
+
+            // Gerar desafio antes de renderizar para saber se algum nó deve ser um placeholder
+            initChallenge(target, parentsArr, children);
+
+            const rowParents = createGenRow('Ancestrais / Pais', parentsArr);
+            const rowMain = createGenRow('Monarca & Irmãos', [target, ...siblings], target.name);
+            const rowChildren = createGenRow('Filhos (Descendentes)', children);
+            const rowGrand = createGenRow('Netos', grandchildren);
+
+            display.appendChild(rowParents);
+            display.appendChild(rowMain);
+            display.appendChild(rowChildren);
+            display.appendChild(rowGrand);
+        }
+
+        function createGenRow(label, kings, activeName = null) {
+            const row = document.createElement('div');
+            row.className = 'gen-row';
+            
+            if (kings.length === 0) {
+                row.innerHTML = `<div class="node-empty">Sem registos diretos</div>`;
+                return row;
+            }
+
+            kings.forEach(k => {
+                const node = document.createElement('div');
+                
+                // Verificar se este nó é o placeholder do desafio Drag & Drop
+                if (currentChallenge && currentChallenge.mode === 'drag' && currentChallenge.correct === k.name) {
+                    node.className = 'node placeholder';
+                    node.innerHTML = `
+                        <div class="placeholder-icon"><i class="fas fa-user-plus"></i></div>
+                        <div style="font-size:0.7rem; color:var(--gold); font-family:'Cinzel'">${label}</div>
+                        <div style="font-size:0.8rem; color:#666">Arraste para aqui</div>
+                    `;
+                    node.ondragover = (e) => { e.preventDefault(); node.classList.add('drag-over'); };
+                    node.ondragleave = () => node.classList.remove('drag-over');
+                    node.ondrop = (e) => {
+                        e.preventDefault();
+                        node.classList.remove('drag-over');
+                        const data = e.dataTransfer.getData("text");
+                        handleDragResult(data, k, node);
+                    };
+                } else {
+                    node.className = `node ${k.name === activeName ? 'active' : ''}`;
+                    node.onclick = () => showDetails(k);
+                    node.innerHTML = `
+                        <div style="font-family:'Cinzel', serif; font-size: 0.6rem; color: var(--gold-bright); margin-bottom: 5px;">${label}</div>
+                        <img src="${k.img}" alt="${k.name}" onerror="this.src='https://via.placeholder.com/100?text=Rei'">
+                        <div class="node-name">${k.name}</div>
+                        <div class="node-role">${k.cognome}</div>
+                    `;
+                }
+                row.appendChild(node);
+            });
+            return row;
+        }
+
+        // --- SISTEMA DE DESAFIOS ---
+        function initChallenge(king, parents, children) {
+            const box = document.getElementById('challenge-box');
+            const qEl = document.getElementById('challenge-question');
+            const optEl = document.getElementById('challenge-options');
+            const header = document.getElementById('challenge-header');
+            const icon = document.getElementById('challenge-icon');
+            const feed = document.getElementById('challenge-feedback');
+            
+            box.style.display = 'block';
+            feed.textContent = '';
+            optEl.innerHTML = '';
+
+            const challengeTypes = [];
+            if(parents.length > 0) challengeTypes.push('pai');
+            if(children.length > 0) challengeTypes.push('filho');
+
+            if(challengeTypes.length === 0) { box.style.display = 'none'; return; }
+
+            const relType = challengeTypes[Math.floor(Math.random() * challengeTypes.length)];
+            const mode = Math.random() > 0.5 ? 'choice' : 'drag'; 
+            
+            let correct = (relType === 'pai') ? parents[0].name : children[0].name;
+            currentChallenge = { mode: mode, rel: relType, correct: correct };
+
+            // Gerar opções incorretas
+            const wrongs = allKingsFlat
+                .filter(k => k.name !== correct && k.name !== king.name)
+                .sort(() => 0.5 - Math.random())
+                .slice(0, 3)
+                .map(k => k.name);
+
+            const allOptions = [correct, ...wrongs].sort(() => 0.5 - Math.random());
+
+            if (mode === 'choice') {
+                header.textContent = 'Desafio de Linhagem';
+                icon.className = 'fas fa-scroll';
+                qEl.textContent = (relType === 'pai') 
+                    ? `Qual destes monarcas é o progenitor direto (pai) de ${king.name}?`
+                    : `Qual destes monarcas é o descendente direto (filho) de ${king.name}?`;
+
+                allOptions.forEach(opt => {
+                    const btn = document.createElement('button');
+                    btn.className = 'btn-option';
+                    btn.textContent = opt;
+                    btn.onclick = () => checkChoiceAnswer(btn, opt === correct);
+                    optEl.appendChild(btn);
+                });
+            } else {
+                header.textContent = 'Desafio: Arrastar e Soltar';
+                icon.className = 'fas fa-hand-pointer';
+                qEl.textContent = (relType === 'pai')
+                    ? `Identifique o progenitor direto (pai) de ${king.name} nas opções ao lado e arraste-o para o lugar correto na árvore.`
+                    : `Identifique o descendente direto (filho) de ${king.name} nas opções ao lado e arraste-o para o lugar correto na árvore.`;
+
+                allOptions.forEach(opt => {
+                    const btn = document.createElement('div');
+                    btn.className = 'btn-option';
+                    btn.textContent = opt;
+                    btn.draggable = true;
+                    btn.ondragstart = (e) => e.dataTransfer.setData("text", opt);
+                    optEl.appendChild(btn);
+                });
+            }
+        }
+
+        function checkChoiceAnswer(btn, isCorrect) {
+            const feed = document.getElementById('challenge-feedback');
+            const allBtns = document.querySelectorAll('.btn-option');
+            allBtns.forEach(b => b.disabled = true);
+
+            if(isCorrect) {
+                btn.classList.add('correct');
+                feed.innerHTML = '<i class="fas fa-check-circle"></i> Excelente! Conhecimento digno de um historiador real.';
+                feed.style.color = "var(--success)";
+                addCoins(20);
+            } else {
+                btn.classList.add('wrong');
+                feed.innerHTML = '<i class="fas fa-times-circle"></i> Incorreto. Analise a árvore genealógica com mais atenção.';
+                feed.style.color = "var(--error)";
+            }
+        }
+
+        function handleDragResult(draggedName, kingObj, nodeElement) {
+            const feed = document.getElementById('challenge-feedback');
+            
+            if (draggedName === kingObj.name) {
+                // Sucesso
+                nodeElement.className = 'node';
+                nodeElement.innerHTML = `
+                    <div style="font-family:'Cinzel', serif; font-size: 0.6rem; color: var(--gold-bright); margin-bottom: 5px;">Recuperado</div>
+                    <img src="${kingObj.img}" alt="${kingObj.name}">
+                    <div class="node-name">${kingObj.name}</div>
+                    <div class="node-role">${kingObj.cognome}</div>
+                `;
+                feed.innerHTML = '<i class="fas fa-star"></i> Posicionamento Perfeito! (+20 Moedas)';
+                feed.style.color = "var(--success)";
+                
+                // Desativar opções de arrasto
+                document.querySelectorAll('.btn-option').forEach(b => {
+                    b.draggable = false;
+                    if(b.textContent === draggedName) b.classList.add('correct');
+                    else b.style.opacity = '0.5';
+                });
+
+                addCoins(20);
+            } else {
+                feed.innerHTML = `<i class="fas fa-times-circle"></i> "${draggedName}" não é o familiar correto para esta posição!`;
+                feed.style.color = "var(--error)";
+                
+                // Pequena animação de erro no placeholder
+                nodeElement.style.borderColor = "var(--error)";
+                setTimeout(() => { nodeElement.style.borderColor = "var(--gold)"; }, 800);
+            }
+        }
+
+        function showDetails(king) {
+            document.getElementById('m-img').src = king.img;
+            document.getElementById('m-name').textContent = king.name;
+            document.getElementById('m-cognome').textContent = king.cognome;
+            document.getElementById('m-details').innerHTML = `
+                <p><strong>Dinastia:</strong> ${king.dynasty}</p>
+                <p><strong>Reinado:</strong> ${king.dates}</p>
+                <p><strong>Filiação:</strong> ${king.filiation}</p>
+            `;
+            document.getElementById('king-modal').style.display = 'flex';
+        }
+
+        function closeModal(e) {
+            document.getElementById('king-modal').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
